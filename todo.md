@@ -1,0 +1,2 @@
+- [ ] style placeholders
+- [x] fix auth__card padding on smaller screens
