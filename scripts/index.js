@@ -15,7 +15,7 @@ if (AUTH_PAGES.includes(path)) {
 } else {
   if (user) {
     if (!APP_PAGES.includes(path)) {
-      window.location.replace("/");
+      window.location.replace("/index.html");
     }
   } else {
     window.location.replace("/auth/login.html");
