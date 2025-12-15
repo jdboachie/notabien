@@ -13,11 +13,11 @@ const user = await getCurrentUser();
 if (AUTH_PAGES.includes(path)) {
   if (user) window.location.replace("/");
 } else {
-  if (!user) {
-    window.location.replace("/auth/login.html");
-  } else {
+  if (user) {
     if (!APP_PAGES.includes(path)) {
       window.location.replace("/");
     }
+  } else {
+    window.location.replace("/auth/login.html");
   }
 }
