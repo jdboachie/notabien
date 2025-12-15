@@ -5,6 +5,8 @@ let path = window.location.pathname;
 if (path === "/" || path === "") path = "/index";
 else if (path.endsWith(".html")) path = path.slice(0, -5);
 
+console.log(path)
+
 const AUTH_PAGES = ["/auth/login", "/auth/signup"];
 const APP_PAGES = ["/index", "/settings"];
 
