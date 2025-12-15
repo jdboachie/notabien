@@ -5,6 +5,8 @@ let path = window.location.pathname;
 if (path === "/") path = "/index";
 else if (path.endsWith(".html")) path = path.slice(0, -5);
 
+console.log(path)
+
 const AUTH_PAGES = ["/auth/login", "/auth/signup"];
 const APP_PAGES = ["/index", "/settings"];
 
@@ -14,7 +16,7 @@ if (AUTH_PAGES.includes(path)) {
   if (user) window.location.replace("/");
 } else {
   if (!user) {
-    window.location.replace("/auth/login");
+    window.location.replace("/auth/login.html");
   } else {
     if (!APP_PAGES.includes(path)) {
       window.location.replace("/");
