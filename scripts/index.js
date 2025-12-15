@@ -1,21 +1,17 @@
 import { getCurrentUser } from "../api/auth.js";
 
 const user = await getCurrentUser();
-const currentUrl = window.location.href;
+const url = window.location.href;
+
+const AUTH_PAGES = /\/auth\/(login|signup)\.html?/;
+const HOME_ALLOWED = /(\.dev\/?$|index|settings)/;
+
 if (!user) {
-  if (
-    !currentUrl.endsWith("login.html") &&
-    !currentUrl.endsWith("signup.html")
-  ) {
+  if (!AUTH_PAGES.test(url)) {
     window.location.href = "/auth/login.html";
   }
 } else {
-  if (
-    currentUrl.endsWith("index.html") ||
-    currentUrl.endsWith("settings.html")
-  ) {
-    console.log(user);
-  } else {
+  if (!HOME_ALLOWED.test(url)) {
     window.location.href = "../index.html";
   }
 }
