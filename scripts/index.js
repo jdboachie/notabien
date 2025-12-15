@@ -1,20 +1,23 @@
 import { getCurrentUser } from "../api/auth.js";
 
-const path = window.location.pathname;
+let path = window.location.pathname;
 
-const AUTH_PAGES = /^\/auth\/(login|signup)\.html$/;
-const APP_PAGES = /^(\/$|\/index\.html$|\/settings\.html$)/;
+if (path === "/") path = "/index";
+else if (path.endsWith(".html")) path = path.slice(0, -5);
 
-if (AUTH_PAGES.test(path)) {
-  const user = await getCurrentUser();
-  if (user) window.location.replace("/index.html");
+const AUTH_PAGES = ["/auth/login", "/auth/signup"];
+const APP_PAGES = ["/index", "/settings"];
+
+const user = await getCurrentUser();
+
+if (AUTH_PAGES.includes(path)) {
+  if (user) window.location.replace("/");
 } else {
-  const user = await getCurrentUser();
   if (!user) {
-    window.location.replace("/auth/login.html");
+    window.location.replace("/auth/login");
   } else {
-    if (!APP_PAGES.test(path)) {
-      window.location.replace("/index.html");
+    if (!APP_PAGES.includes(path)) {
+      window.location.replace("/");
     }
   }
 }
