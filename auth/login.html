@@ -9,8 +9,8 @@
             sizes="32x32"
             href="../assets/images/favicon-32x32.png"
         />
-        <link rel="stylesheet" href="../reset.css" />
-        <link rel="stylesheet" href="../styles.css" />
+        <link rel="stylesheet" href="../css/reset.css" />
+        <link rel="stylesheet" href="../css/styles.css" />
         <title>Frontend Mentor | Note-taking web app</title>
     </head>
     <body>
@@ -23,7 +23,7 @@
                         Please log in to continue
                     </p>
                 </div>
-                <form class="auth__card__section">
+                <form id="login-form" class="auth__card__section">
                     <div class="form__group">
                         <label for="email" class="form__group__label">
                             Email Address
@@ -54,7 +54,7 @@
                             required
                             type="password"
                         />
-                        <button class="showpassword__button" type="button">
+                        <button class="btn showpassword__button" type="button">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -77,12 +77,12 @@
                             </svg>
                         </button>
                     </div>
-                    <button type="submit" class="btn__default">Login</button>
+                    <button type="submit" class="btn btn__default">Login</button>
                 </form>
                 <div class="separator-top"></div>
                 <div class="auth__card__section">
                     <p class="text-muted text-preset-5">Or log in with:</p>
-                    <button type="button" class="btn__outline">
+                    <button type="button" class="btn btn__outline">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -107,5 +107,9 @@
                 </p>
             </div>
         </main>
+        <script src="../api/supabase.js" type="module"></script>
+        <script src="../api/auth.js" type="module"></script>
+        <script src="../scripts/index.js" type="module"></script>
+        <script src="../scripts/login.js" type="module"></script>
     </body>
 </html>

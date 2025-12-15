@@ -9,8 +9,8 @@
             sizes="32x32"
             href="../assets/images/favicon-32x32.png"
         />
-        <link rel="stylesheet" href="../reset.css" />
-        <link rel="stylesheet" href="../styles.css" />
+        <link rel="stylesheet" href="../css/reset.css" />
+        <link rel="stylesheet" href="../css/styles.css" />
         <title>Frontend Mentor | Note-taking web app</title>
     </head>
     <body>
@@ -24,7 +24,7 @@
                         productivity.
                     </p>
                 </div>
-                <form class="auth__card__section">
+                <form id="signup-form" class="auth__card__section">
                     <div class="form__group">
                         <label for="email" class="form__group__label">
                             Email Address
@@ -33,7 +33,7 @@
                             class="text-preset-5"
                             placeholder="email@example.com"
                             type="email"
-                            id="email"
+                            id="signup-form-email"
                             name="email"
                             required
                         />
@@ -46,7 +46,7 @@
                             <input
                                 class="text-preset-5"
                                 type="password"
-                                id="password"
+                                id="signup-form-password"
                                 name="password"
                                 required
                             />
@@ -122,5 +122,10 @@
                 </form>
             </div>
         </main>
+        <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+        <script src="../api/supabase.js" type="module"></script>
+        <script src="../api/auth.js" type="module"></script>
+        <script src="../scripts/index.js" type="module"></script>
+        <script src="../scripts/signup.js" type="module"></script>
     </body>
 </html>

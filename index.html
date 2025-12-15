@@ -9,8 +9,8 @@
             sizes="32x32"
             href="./assets/images/favicon-32x32.png"
         />
-        <link rel="stylesheet" href="./styles.css" />
-        <link rel="stylesheet" href="./reset.css" />
+        <link rel="stylesheet" href="./css/styles.css" />
+        <link rel="stylesheet" href="./css/reset.css" />
         <title>Frontend Mentor | Note-taking web app</title>
     </head>
     <body class="app">
@@ -19,7 +19,7 @@
                 <img class="logo" src="./assets/images/logo.svg" />
             </div>
             <div class="sidebar__group">
-                <button class="sidebar__button">
+                <button class="btn sidebar__button">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -48,7 +48,7 @@
                     </svg>
                     All Notes
                 </button>
-                <button class="sidebar__button">
+                <button class="btn sidebar__button">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -79,7 +79,7 @@
                 <p class="sidebar__group__label text-preset-4">Tags</p>
                 <ul id="tag-list" class="sidebar__menu">
                     <li class="sidebar__menu__item">
-                        <button class="sidebar__button">
+                        <button class="btn sidebar__button">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -145,7 +145,7 @@
                             placeholder="Search by title, content, or tags"
                         />
                     </label>
-                    <button class="btn__ghost btn__icon">
+                    <a href="./settings.html" class="btn btn__ghost btn__icon">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -160,12 +160,12 @@
                                 clip-rule="evenodd"
                             />
                         </svg>
-                    </button>
+                    </a>
                 </div>
             </header>
             <section class="main__content">
                 <aside id="secondary-sidebar" class="sidebar">
-                    <button class="btn__default">
+                    <button class="btn btn__default">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -183,7 +183,7 @@
                 </aside>
                 <div class="noteview">
                     <div class="editor">
-                        <h1 class="editor__title text-preset-1">
+                        <h1 id="editor-title" class="editor__title text-preset-1">
                             React Performance Optimization
                         </h1>
                         <div class="editor__metadata">
@@ -250,12 +250,12 @@
                         ></textarea>
                     </div>
                     <div class="bottombar">
-                        <button class="btn__default">Save Note</button>
-                        <button class="btn__secondary">Cancel</button>
+                        <button class="btn btn__default">Save Note</button>
+                        <button class="btn btn__secondary">Cancel</button>
                     </div>
                 </div>
                 <aside class="sidebar right__sidebar">
-                    <button class="sidebar__button__outline">
+                    <button class="btn sidebar__button__outline">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -280,7 +280,7 @@
                         </svg>
                         Archive Note
                     </button>
-                    <button class="sidebar__button__outline">
+                    <button class="btn sidebar__button__outline">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -301,6 +301,6 @@
                 </aside>
             </section>
         </main>
-        <script src="./script.js" />
+        <script src="./scripts/index.js" type="module" />
     </body>
 </html>
