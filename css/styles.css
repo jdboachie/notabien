@@ -415,11 +415,20 @@ input:focus {
     gap: var(--spacing-100);
 }
 
+.sidebar__button__secondary {
+    justify-content: start;
+    border: none;
+    padding-left: var(--spacing-100);
+    background-color: var(--color-neutral-100);
+}
+
 .sidebar__button__outline:hover {
     background-color: var(--hover);
 }
 
-.sidebar__button > svg {
+.sidebar__button > svg,
+.sidebar__button__outline > svg,
+.sidebar__button__secondary > svg {
     width: 20px;
     height: 20px;
 }
@@ -568,6 +577,7 @@ input[type="search"] {
 
 .settingsview {
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-200);
@@ -575,20 +585,54 @@ input[type="search"] {
     background-color: var(--surface);
 }
 
-.settings__group__content {
+.settings__group__form {
+    width: 528px;
+    display: flex;
+    flex-direction: column;
     padding: 24px 0;
+    gap: var(--spacing-200);
+}
+
+.settings__apply__button {
+    width: fit-content;
+    align-self: flex-end;
 }
 
 .radio__card {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-200);
     padding: var(--spacing-200);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-12);
+}
+
+.radio__card__icon {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-12);
 }
 
 .radio__card__label {
     display: flex;
     flex-direction: column;
+    white-space: nowrap;
+}
+
+.radio__card > input {
+    width: fit-content;
+    height: fit-content;
+    margin: auto var(--spacing-200) auto auto;
+}
+
+.radio__card > input:focus {
+    outline: none;
 }
 
 @media (max-width: 768px) {

@@ -1,3 +1,1 @@
-export default function toast(message, type) {
-  
-}
+export default function toast(message, type) {}

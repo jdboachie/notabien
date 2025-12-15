@@ -11,7 +11,7 @@
         />
         <link rel="stylesheet" href="../css/reset.css" />
         <link rel="stylesheet" href="../css/styles.css" />
-        <title>Frontend Mentor | Note-taking web app</title>
+        <title>Notabien</title>
     </head>
     <body class="app">
         <aside id="primary-sidebar" class="sidebar">
@@ -165,7 +165,10 @@
             </header>
             <section class="main__content">
                 <aside id="secondary-sidebar" class="sidebar">
-                    <button class="btn sidebar__button">
+                    <button
+                        class="btn sidebar__button"
+                        id="color-theme-tab-button"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -191,7 +194,10 @@
                         </svg>
                         Color Theme
                     </button>
-                    <button class="btn sidebar__button">
+                    <button
+                        class="btn sidebar__button"
+                        id="font-theme-tab-button"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -213,7 +219,10 @@
                             /></svg
                         >Font Theme
                     </button>
-                    <button class="btn sidebar__button">
+                    <button
+                        class="btn sidebar__button"
+                        id="change-password-tab-button"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -264,64 +273,7 @@
                         >Logout
                     </button>
                 </aside>
-                <div class="settingsview">
-                    <!-- Color theme content start -->
-                    <div class="settings__group">
-                        <h2 class="settings__group__title text-preset-3">
-                            Color Theme
-                        </h2>
-                        <p class="settings__group__description text-preset-5">
-                            Choose your color theme:
-                        </p>
-                        <form class="settings__group__content">
-                            <label class="radio__card">
-                                <div class="radio__card__label">
-                                    <h3 class="text-preset-4">Light Mode</h3>
-                                    <p class="text-preset-6">
-                                        Pick a clean and classic light theme
-                                    </p>
-                                </div>
-                                <input type="radio" name="color-theme" />
-                            </label>
-                            <label class="radio__card">
-                                <div class="radio__card__label">
-                                    <h3 class="text-preset-4">Dark Mode</h3>
-                                    <p class="text-preset-6">
-                                        Select a sleek and modern dark theme
-                                    </p>
-                                </div>
-                                <input type="radio" name="color-theme" />
-                            </label>
-                            <label class="radio__card">
-                                <div class="radio__card__label">
-                                    <h3 class="text-preset-4">System</h3>
-                                    <p class="text-preset-6">
-                                        Adapts to your device's theme
-                                    </p>
-                                </div>
-                                <input type="radio" name="color-theme" />
-                            </label>
-                        </form>
-                        <button type="submit" class="btn btn__default">
-                            Apply Changes
-                        </button>
-                    </div>
-                    <!-- Color theme content end -->
-
-                    <!-- Font theme content start -->
-
-                    Font Theme Choose your font theme: Sans-serif Clean and
-                    modern, easy to read. Serif Classic and elegant for a
-                    timeless feel. Monospace Code-like, great for a technical
-                    vibe. Apply Changes
-
-                    <!-- Font theme content end -->
-
-                    <!-- Change password content start -->
-
-                    Change Password Change Password Old Password New Password At
-                    least 8 characters Confirm New Password Save Password
-                </div>
+                <div class="settingsview" id="settings-view"></div>
             </section>
         </main>
         <script src="./scripts/index.js" type="module"></script>
