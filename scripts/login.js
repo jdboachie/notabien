@@ -6,9 +6,14 @@ document.getElementById("login-form").addEventListener("submit", (e) => {
 
   const obj = Object.fromEntries(fd.entries());
 
-  signIn(obj.email, obj.password).then(() => {
-    window.location.href = "/index.html";
-  }).catch((error) => {
-    console.log("There was an error", error)
-  });
+  signIn(obj.email, obj.password)
+    .then(() => {
+      window.location.href = "/index.html";
+    })
+    .catch((error) => {
+      console.log("There was an error", error);
+    });
 });
+
+import attachShowPassword from "./show-password.js";
+attachShowPassword();

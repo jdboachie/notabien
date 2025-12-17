@@ -1,3 +1,7 @@
+import { loadTheme, loadFont } from "../scripts/theme.js";
+loadTheme();
+loadFont();
+
 import { getCurrentUser } from "../api/auth.js";
 
 let path = window.location.pathname;

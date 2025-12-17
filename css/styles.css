@@ -18,6 +18,38 @@
     font-style: italic;
 }
 
+@font-face {
+    font-family: "Noto-Serif";
+    src: url("../assets/fonts/noto-serif/NotoSerif-VariableFont_wdth,wght.ttf")
+        format("truetype");
+    font-weight: 1 1000;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Noto-Serif";
+    src: url("../assets/fonts/noto-serif/NotoSerif-Italic-VariableFont_wdth,wght.ttf")
+        format("truetype");
+    font-weight: 1 1000;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Source-Code-Pro";
+    src: url("../assets/fonts/source-code-pro/SourceCodePro-VariableFont_wght.ttf")
+        format("truetype");
+    font-weight: 1 1000;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Source-Code-Pro";
+    src: url("../assets/fonts/source-code-pro/SourceCodePro-Italic-VariableFont_wght.ttf")
+        format("truetype");
+    font-weight: 1 1000;
+    font-style: italic;
+}
+
 :root {
     --color-neutral-950: hsl(222, 32%, 8%);
     --color-neutral-900: hsl(230, 19%, 12%);
@@ -66,6 +98,13 @@
     --radius-full: 999px;
 
     --font-family-sans: "Inter", sans-serif;
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    --font-serif: "Noto-Serif", ui-serif, Georgia, "Times New Roman", serif;
+    --font-mono:
+        "Source-Code-Pro", ui-monospace, SFMono-Regular, Menlo, Consolas,
+        monospace;
+
+    --font-family-base: var(--font-sans);
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-base: 16px;
@@ -91,15 +130,66 @@
     --border: var(--color-neutral-300);
     --active-border: var(--color-neutral-950);
     --hover: var(--color-neutral-50);
+    --placeholder: var(--color-neutral-500);
     --primary: var(--color-blue-500);
+    --primary-foreground: var(--background);
     --primary-hover: var(--color-blue-700);
     --ring: var(--color-neutral-400);
     --separator: var(--color-neutral-200);
     --surface: var(--color-neutral-0);
+    --btn-secondary: var(--color-neutral-100);
 
-    --shadow-sm: 0px 1px 2px 0px rgba(240, 240, 240, 0.6);
-    --shadow-md: 0px 4px 6px 0px rgba(240, 240, 240, 0.6);
-    --shadow-lg: 0px 8px 12px 0px rgba(240, 240, 240, 0.6);
+    --shadow: rgba(240, 240, 240, 0.6);
+
+    --shadow-sm: 0px 1px 2px 0px var(--shadow);
+    --shadow-md: 0px 4px 6px 0px var(--shadow);
+    --shadow-lg: 0px 8px 12px 0px var(--shadow);
+}
+
+/* TODO: Confirm the dark mode colors */
+[data-theme="dark"] {
+    --background: black;
+    --foreground: var(--color-neutral-200);
+    --surface: black;
+    --border-light: var(--color-neutral-900);
+    --border: var(--color-neutral-800);
+    --hover: var(--color-neutral-800);
+    --primary-foreground: var(--foreground);
+    --separator: var(--color-neutral-800);
+    --ring: var(--color-neutral-600);
+
+    --muted-text: var(--color-neutral-400);
+    --shadow: rgba(0, 0, 0, 0.6);
+    --btn-secondary: var(--color-neutral-800);
+}
+
+[data-font="sans"] {
+    --font-family-base: var(--font-sans);
+}
+
+[data-font="serif"] {
+    --font-family-base: var(--font-serif);
+}
+
+[data-font="mono"] {
+    --font-family-base: var(--font-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --background: black;
+        --foreground: var(--color-neutral-200);
+        --surface: black;
+        --border-light: var(--color-neutral-900);
+        --border: var(--color-neutral-800);
+        --primary-foreground: var(--foreground);
+        --hover: var(--color-neutral-800);
+        --separator: var(--color-neutral-800);
+        --ring: var(--color-neutral-600);
+        --shadow: rgba(0, 0, 0, 0.6);
+        --muted-text: var(--color-neutral-400);
+        --btn-secondary: var(--color-neutral-800);
+    }
 }
 
 .text-muted {
@@ -107,7 +197,7 @@
 }
 
 .text-preset-1 {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height);
@@ -118,12 +208,12 @@
     font-size: var(--font-size-lg);
     line-height: var(--line-height);
     letter-spacing: var(--letter-spacing-tighter);
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     font-weight: var(--font-weight-bold);
 }
 
 .text-preset-4 {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height);
@@ -131,14 +221,14 @@
 }
 
 .text-preset-5 {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     font-size: var(--font-size-sm);
     line-height: var(--line-height);
     letter-spacing: var(--letter-spacing-base);
 }
 
 .text-preset-6 {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     font-size: var(--font-size-xs);
     line-height: var(--line-height);
     letter-spacing: var(--letter-spacing-base);
@@ -147,8 +237,9 @@
 html,
 body {
     background-color: var(--background);
+    color: var(--foreground);
     text-rendering: optimizeLegibility;
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
 }
 
 .main {
@@ -255,8 +346,13 @@ input {
     border: 1px solid var(--border);
     border-radius: var(--radius-8);
     background-color: var(--surface);
+    color: var(--foreground);
     padding: var(--spacing-150) var(--spacing-200);
     box-shadow: var(--shadow-sm);
+}
+
+input::placeholder {
+    color: var(--placeholder);
 }
 
 input:hover {
@@ -274,15 +370,16 @@ input:focus {
     height: 44px;
     display: inline-flex;
     align-items: center;
+    color: var(--foreground);
     justify-content: center;
     gap: var(--spacing-100);
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     padding: var(--spacing-150) var(--spacing-200);
     border: 1px solid var(--border);
     border-radius: var(--radius-8);
 
     /* text-preset-4 */
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height);
@@ -302,7 +399,7 @@ input:focus {
 
 .btn__default {
     background-color: var(--primary);
-    color: var(--color-neutral-0);
+    color: var(--primary-foreground);
     border-color: var(--primary);
 }
 
@@ -311,7 +408,7 @@ input:focus {
 }
 
 .btn__secondary {
-    background-color: var(--color-neutral-100);
+    background-color: var(--btn-secondary);
     border: none;
 }
 
@@ -358,10 +455,15 @@ input:focus {
     border: none;
     border-color: transparent;
     background-color: transparent;
+    color: var(--color-neutral-500);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .showpassword__button > svg {
-    fill: var(--color-neutral-500);
+    fill: currentColor;
+    stroke: currentColor;
 }
 
 .app {
@@ -379,8 +481,8 @@ input:focus {
     width: 272px;
     min-width: 272px;
     height: 100%;
-    font-family: var(--font-family-sans);
-    background-color: var(--color-neutral-0);
+    font-family: var(--font-family-base);
+    background-color: var(--surface);
     border-right: 1px solid var(--border);
 }
 
@@ -419,7 +521,7 @@ input:focus {
     justify-content: start;
     border: none;
     padding-left: var(--spacing-100);
-    background-color: var(--color-neutral-100);
+    background-color: var(--btn-secondary);
 }
 
 .sidebar__button__outline:hover {
@@ -490,11 +592,11 @@ input:focus {
 }
 
 .page__title {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
 }
 
 input[type="search"] {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     padding-left: 36px;
     padding-right: 0px;
 }
@@ -529,7 +631,7 @@ input[type="search"] {
 }
 
 .editor__title {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
 }
 
 .editor__metadata {
@@ -555,12 +657,12 @@ input[type="search"] {
 }
 
 .metadata__field__label {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
     width: 115px;
 }
 
 .metadata__field__value {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-family-base);
 }
 
 .editor__textarea {
@@ -568,6 +670,8 @@ input[type="search"] {
     outline: none;
     resize: none;
     border: none;
+    color: var(--foreground);
+    background-color: var(--surface);
 }
 
 .editor__textarea:focus {
