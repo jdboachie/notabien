@@ -10,7 +10,6 @@ import {
 } from "./templates.js";
 import { loadTheme, loadFont } from "./theme.js";
 
-console.log("Script loaded")
 ensureAuth();
 loadTheme();
 loadFont();
@@ -67,7 +66,6 @@ effect(async () => {
   } else {
     data = await fetchNotes();
   }
-  console.log("setting notes to", data);
   set(notes, data);
 });
 
