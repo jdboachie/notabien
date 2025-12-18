@@ -82,6 +82,8 @@ effect(() => {
         <div class="skeleton"></div>
         <div class="skeleton"></div>
         <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
         `;
       return;
     }
@@ -94,13 +96,11 @@ effect(() => {
       notesList.innerHTML =
         get(currentTab) === "archived-notes"
           ? `
-        <ul>
           <p style="margin-bottom: 16px;" class="text-muted text-preset-6">
             All your archived notes are stored here. You can restore or delete them anytime.
           </p>
-        </ul>
       `
-          : `<ul></ul>`;
+          : ``;
       data.forEach((note, idx) => {
         const template = createNoteListItemTemplate(
           note.title,
