@@ -10,6 +10,7 @@ import {
 } from "./templates.js";
 import { loadTheme, loadFont } from "./theme.js";
 
+console.log("Script loaded")
 ensureAuth();
 loadTheme();
 loadFont();
