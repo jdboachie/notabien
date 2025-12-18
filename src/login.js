@@ -1,4 +1,4 @@
-import { signIn } from "../api/auth.js";
+import { signIn } from "./api/auth.js";
 
 document.getElementById("login-form").addEventListener("submit", (e) => {
   e.preventDefault();

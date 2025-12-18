@@ -1,11 +1,9 @@
-import { signOut } from "../api/auth.js";
-import {
-  loadTheme,
-  applyTheme,
-  loadFont,
-  applyFont,
-} from "../scripts/theme.js";
+import { signOut } from "./api/auth.js";
+import { loadTheme, applyTheme, loadFont, applyFont } from "../src/theme.js";
 import attachShowPassword from "./show-password.js";
+import ensureAuth from "./auth.js";
+
+ensureAuth();
 
 const sidebar = document.getElementById("settings-view");
 
@@ -284,9 +282,19 @@ function renderContent() {
 
       const changeForm = document.getElementById("change-password-form");
       if (changeForm) {
-        changeForm.addEventListener("submit", (e) => {
+        changeForm.addEventListener("submit", async (e) => {
           e.preventDefault();
-          // TODO: implement change password logic
+          const { data, error } = await supabase.auth.updateUser({
+            password: 'new password'
+          })
+          
+          if (error) {
+            // notify the user
+          } else {
+            // notify the user
+            console.log("User's password changed successfully")
+            console.log(data)
+          }
         });
 
         attachShowPassword(changeForm);
@@ -328,7 +336,7 @@ loadFont();
 updateTab();
 renderContent();
 
-document
+document // this could be redundant
   .getElementById("color-theme-submit-button")
   .addEventListener("click", (e) => {
     e.preventDefault();
