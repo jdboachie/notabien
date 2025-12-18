@@ -24,7 +24,10 @@ let currentTab = state(tab == "archived" ? "archived-notes" : "all-notes");
 function updateTab() {
   for (const [tab, button] of Object.entries(TABS)) {
     if (button !== null) {
-      button.classList.toggle("sidebar__button__secondary", tab === get(currentTab));
+      button.classList.toggle(
+        "sidebar__button__secondary",
+        tab === get(currentTab),
+      );
       button.classList.toggle("sidebar__button", tab !== get(currentTab));
     }
   }
@@ -33,7 +36,7 @@ function updateTab() {
 for (const [tab, button] of Object.entries(TABS)) {
   if (button !== null) {
     button.addEventListener("click", () => {
-      set(notes, null)
+      set(notes, null);
       set(currentTab, tab);
       updateTab();
     });
@@ -48,8 +51,8 @@ document
   .getElementById("create-note-button")
   .addEventListener("click", (event) => {
     event.preventDefault();
-    set(notes, null)
-    set(currentTab, "all-notes")
+    set(notes, null);
+    set(currentTab, "all-notes");
     noteView.innerHTML = createEditorTemplate();
   });
 
@@ -63,6 +66,7 @@ effect(async () => {
   } else {
     data = await fetchNotes();
   }
+  console.log("setting notes to", data);
   set(notes, data);
 });
 
@@ -88,13 +92,16 @@ effect(() => {
           ? archivedNotesEmptyState
           : noteListEmptyStateTemplate;
     } else {
-      notesList.innerHTML = get(currentTab) === "archived-notes" ? `
+      notesList.innerHTML =
+        get(currentTab) === "archived-notes"
+          ? `
         <ul>
           <p style="margin-bottom: 16px;" class="text-muted text-preset-6">
             All your archived notes are stored here. You can restore or delete them anytime.
           </p>
         </ul>
-      ` : `<ul></ul>`;
+      `
+          : `<ul></ul>`;
       data.forEach((note, idx) => {
         const template = createNoteListItemTemplate(
           note.title,
