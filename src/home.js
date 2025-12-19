@@ -165,7 +165,7 @@ effect(() => {
 
     set(
       notes,
-      get(notes).map((n) => (n.id === saved.id ? { ...n, ...saved } : n)), // optimistic
+      get(notes).map((n) => (n.id === saved.id ? { ...n, ...saved } : n)),
     );
     set(currentTab, "all");
     set(activeNoteId, saved.id);
