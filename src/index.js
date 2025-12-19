@@ -18,6 +18,11 @@ const TABS = {
   "all-notes": document.getElementById("all-notes-button"),
   "archived-notes": document.getElementById("archived-notes-button"),
 };
+let pageTitle = document.getElementById("page-title");
+let noteView = document.getElementById("note-view");
+let notesList = document.getElementById("note-list");
+console.log(pageTitle);
+
 const tab = new URLSearchParams(window.location.search).get("tab");
 
 let currentTab = state(tab == "archived" ? "archived-notes" : "all-notes");
@@ -50,8 +55,6 @@ for (const [tab, button] of Object.entries(TABS)) {
   }
 }
 
-let noteView = document.getElementById("note-view");
-
 document
   .getElementById("create-note-button")
   .addEventListener("click", (event) => {
@@ -64,10 +67,9 @@ document
     noteView.innerHTML = createEditorTemplate();
   });
 
-let notesList = document.getElementById("note-list");
-
 effect(() => {
-  get(currentTab);
+  let cur = get(currentTab);
+  pageTitle.innerText = cur === "all-notes" ? "All Notes" : "Archived Notes"
   updateTab();
 });
 
