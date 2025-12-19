@@ -18,6 +18,7 @@ export function createEditorTemplate(
   <form class="editor" id="editor">
     <input
         id="editor-title"
+        name="title"
         class="editor__title text-preset-1"
         placeholder="Enter a title..."
         ${title ? `value="${title}"` : ""}
@@ -50,6 +51,7 @@ export function createEditorTemplate(
               </svg>
               <p class="metadata__field__label text-preset-5">Tags</p>
               <input
+                name="tags"
                 class="metadata__field__value tag__input"
                 ${tags ? `value="${tags.join(", ")}"` : ""}
                 placeholder="Add tags separated by commas (e.g. Work, Planning)"
@@ -100,12 +102,13 @@ export function createEditorTemplate(
       </div>
       <div class="separator-full"></div>
       <textarea
+          name="content"
           class="editor__textarea text-preset-5"
           placeholder="Start typing your note here..."
       >${content ?? ""}</textarea>
     <div class="bottombar">
-        <button id="save-note-button" class="btn btn__default">Save Note</button>
-        <button id="cancel-button" class="btn btn__secondary">Cancel</button>
+        <button type="submit" id="save-note-button" class="btn btn__default">Save Note</button>
+        <button type="reset" id="cancel-button" class="btn btn__secondary">Cancel</button>
     </div>
   </form>
   ${
@@ -178,6 +181,13 @@ export const noteListEmptyStateTemplate = `
   </p>
   `;
 
+/**
+ * Builds a note list item template based on the input.
+ * @param {string} title
+ * @param {string[]} tags
+ * @param {number} lastEdited
+ * @returns {string} Note list item template
+ */
 export function createNoteListItemTemplate(title, tags, lastEdited) {
   return `
     <li class="note__list__item">
@@ -198,6 +208,11 @@ export function createNoteListItemTemplate(title, tags, lastEdited) {
   `;
 }
 
+/**
+ * Creates and returns a full-width separator element used in layouts.
+ *
+ * @returns {HTMLDivElement} A div element with the "separator-full" class.
+ */
 export function separator() {
   const sep = document.createElement("div");
   sep.classList.add("separator-full");
