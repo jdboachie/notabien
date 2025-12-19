@@ -15,7 +15,7 @@ export function createEditorTemplate(
   isArchived,
 ) {
   return `
-  <div class="editor">
+  <form class="editor" id="editor">
     <input
         id="editor-title"
         class="editor__title text-preset-1"
@@ -107,7 +107,7 @@ export function createEditorTemplate(
         <button id="save-note-button" class="btn btn__default">Save Note</button>
         <button id="cancel-button" class="btn btn__secondary">Cancel</button>
     </div>
-  </div>
+  </form>
   ${
     title ?
     `<aside class="sidebar right__sidebar">

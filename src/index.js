@@ -21,7 +21,6 @@ const TABS = {
 let pageTitle = document.getElementById("page-title");
 let noteView = document.getElementById("note-view");
 let notesList = document.getElementById("note-list");
-console.log(pageTitle);
 
 const tab = new URLSearchParams(window.location.search).get("tab");
 
@@ -66,12 +65,6 @@ document
     set(activeNoteId, null);
     noteView.innerHTML = createEditorTemplate();
   });
-
-effect(() => {
-  let cur = get(currentTab);
-  pageTitle.innerText = cur === "all-notes" ? "All Notes" : "Archived Notes"
-  updateTab();
-});
 
 effect(async () => {
   let data;
@@ -160,6 +153,9 @@ effect(() => {
 
 effect(() => {
   const tab = get(currentTab) === "archived-notes" ? "archived" : "all";
+  pageTitle.innerText = cur === "all-notes" ? "All Notes" : "Archived Notes";
+  updateTab();
+
   const activeNote = get(activeNoteId);
   const params = new URLSearchParams();
   params.set("tab", tab);

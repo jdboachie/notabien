@@ -128,6 +128,7 @@
     --foreground: var(--color-neutral-950);
     --border-light: var(--color-neutral-200);
     --border: var(--color-neutral-300);
+    --active: var(--color-neutral-100);
     --active-border: var(--color-neutral-950);
     --hover: var(--color-neutral-50);
     --placeholder: var(--color-neutral-500);
@@ -153,6 +154,7 @@
     --background: black;
     --foreground: var(--color-neutral-200);
     --surface: black;
+    --active: var(--color-neutral-900);
     --border-light: var(--color-neutral-900);
     --border: var(--color-neutral-800);
     --hover: var(--color-neutral-800);
@@ -185,6 +187,7 @@
         --background: black;
         --foreground: var(--color-neutral-200);
         --surface: black;
+        --active: var(--color-neutral-900);
         --border-light: var(--color-neutral-900);
         --border: var(--color-neutral-800);
         --primary-foreground: var(--foreground);
@@ -691,7 +694,7 @@ input[type="search"] {
 }
 
 .activenote {
-    background-color: var(--color-neutral-100);
+    background-color: var(--active);
     border-radius: var(--radius-8);
 }
 
