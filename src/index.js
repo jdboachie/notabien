@@ -19,7 +19,12 @@ const TABS = {
   "archived-notes": document.getElementById("archived-notes-button"),
 };
 const tab = new URLSearchParams(window.location.search).get("tab");
+
 let currentTab = state(tab == "archived" ? "archived-notes" : "all-notes");
+let notes = state(null);
+let activeNoteId = state(
+  new URLSearchParams(window.location.search).get("activeNote"),
+);
 
 function updateTab() {
   for (const [tab, button] of Object.entries(TABS)) {
@@ -36,14 +41,14 @@ function updateTab() {
 for (const [tab, button] of Object.entries(TABS)) {
   if (button !== null) {
     button.addEventListener("click", () => {
-      set(notes, null);
-      set(currentTab, tab);
-      updateTab();
+      if (get(currentTab) !== tab) {
+        set(notes, null);
+        set(currentTab, tab);
+        updateTab();
+      }
     });
   }
 }
-
-updateTab();
 
 let noteView = document.getElementById("note-view");
 
@@ -51,13 +56,20 @@ document
   .getElementById("create-note-button")
   .addEventListener("click", (event) => {
     event.preventDefault();
-    set(notes, null);
-    set(currentTab, "all-notes");
+    if (get(currentTab) !== "all-notes") {
+      set(currentTab, "all-notes");
+      set(notes, null);
+    }
+    set(activeNoteId, null);
     noteView.innerHTML = createEditorTemplate();
   });
 
 let notesList = document.getElementById("note-list");
-let notes = state(null);
+
+effect(() => {
+  get(currentTab);
+  updateTab();
+});
 
 effect(async () => {
   let data;
@@ -70,6 +82,7 @@ effect(async () => {
 });
 
 effect(() => {
+  get(activeNoteId);
   function renderNotes() {
     const data = get(notes);
     if (data === null) {
@@ -110,23 +123,47 @@ effect(() => {
         );
         const node = document.createElement("li");
         node.innerHTML = template;
+        if (get(activeNoteId) === note.id) {
+          node.classList.add("activenote");
+        } else {
+          node.classList.remove("activenote");
+        }
         node.addEventListener("click", (event) => {
           event.preventDefault();
-          noteView.innerHTML = createEditorTemplate(
-            note.title,
-            note.content,
-            note.tags,
-            note.last_edited,
-            note.is_archived,
-          );
+          set(activeNoteId, note.id);
         });
         notesList.append(node);
         if (idx !== data.length - 1) {
           notesList.append(separator());
         }
       });
+      const activeId = get(activeNoteId);
+      if (activeId != null) {
+        const active = data.find((n) => String(n.id) === String(activeId));
+        if (active) {
+          noteView.innerHTML = createEditorTemplate(
+            active.title,
+            active.content,
+            active.tags,
+            active.last_edited,
+            active.is_archived,
+          );
+        }
+      }
     }
   }
 
   renderNotes();
+});
+
+effect(() => {
+  const tab = get(currentTab) === "archived-notes" ? "archived" : "all";
+  const activeNote = get(activeNoteId);
+  const params = new URLSearchParams();
+  params.set("tab", tab);
+  if (activeNote != null) {
+    params.set("activeNote", String(activeNote));
+  }
+  const url = `${window.location.pathname}?${params.toString()}`;
+  history.replaceState(null, "", url);
 });

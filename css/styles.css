@@ -594,8 +594,9 @@ input:focus {
     width: 100%;
     display: flex;
     flex-direction: row;
-    gap: var(--spacing-100);
-    padding: var(--spacing-300);
+    gap: var(--spacing-200);
+    padding: var(--spacing-200) 0;
+    padding-bottom: 0;
     background-color: var(--surface);
     border-top: 1px solid var(--border);
 }
@@ -629,6 +630,7 @@ input[type="search"] {
 }
 
 .note__list {
+    height: fit-content;
     margin-top: var(--spacing-200);
     display: flex;
     flex-direction: column;
@@ -688,16 +690,22 @@ input[type="search"] {
     border-radius: var(--radius-4);
 }
 
+.activenote {
+    background-color: var(--color-neutral-100);
+    border-radius: var(--radius-8);
+}
+
 .note__view {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     background-color: var(--surface);
 }
 
 .editor {
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     background-color: var(--surface);
