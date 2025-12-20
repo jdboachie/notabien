@@ -9,6 +9,7 @@ import {
   separator,
 } from "./templates.js";
 import { loadTheme, loadFont } from "./theme.js";
+import toast from "./toaster.js";
 
 ensureAuth();
 loadTheme();
@@ -150,6 +151,7 @@ effect(() => {
 
   editor.addEventListener("submit", async (e) => {
     e.preventDefault();
+    document.getElementById("save-note-button").disabled = true;
 
     const fd = new FormData(e.target);
     let payload = Object.fromEntries(fd.entries());
@@ -162,6 +164,7 @@ effect(() => {
     if (id && id !== "new") payload.id = id;
 
     const saved = await upsertNote(payload);
+    toast("success", "Note saved successfully");
 
     set(
       notes,

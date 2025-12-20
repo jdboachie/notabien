@@ -1,9 +1,12 @@
+import attachShowPassword from "./show-password.js";
+import toast from "./toaster.js";
 import { signIn } from "./api/auth.js";
+
+attachShowPassword();
 
 document.getElementById("login-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const fd = new FormData(e.target);
-
   const obj = Object.fromEntries(fd.entries());
 
   signIn(obj.email, obj.password)
@@ -11,9 +14,7 @@ document.getElementById("login-form").addEventListener("submit", (e) => {
       window.location.href = "/index.html";
     })
     .catch((error) => {
-      console.log("There was an error", error);
+      toast("error", error);
     });
 });
 
-import attachShowPassword from "./show-password.js";
-attachShowPassword();
