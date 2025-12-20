@@ -30,10 +30,22 @@ const errorIcon = `
   </svg>
   `;
 
+const infoIcon = `
+  <svg
+   xmlns="http://www.w3.org/2000/svg"
+   width="32"
+   height="32"
+   fill="#000000"
+   viewBox="0 0 256 256"
+  >
+    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-4,48a12,12,0,1,1-12,12A12,12,0,0,1,124,72Zm12,112a16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40a8,8,0,0,1,0,16Z"></path>
+  </svg>
+  `;
+
 /**
  * Displays a toast notification.
  *
- * @param {string} type - The type of toast (e.g., 'success', 'error').
+ * @param {string} type - The type of toast (e.g., 'success', 'error', 'info').
  * @param {string} message - The message to display in the toast.
  * @param {number} [duration=3000] - The duration in milliseconds to show the toast. Defaults to 3000ms.
  */
@@ -41,7 +53,34 @@ export default function toast(type, message, duration = 3000) {
   const toastElement = document.createElement("div");
   toastElement.classList.add("toast", "text-preset-5");
 
-  const icon = type === "error" ? errorIcon : checkmarkIcon;
+  if (typeof type === "undefined") {
+    console.warn(
+      'No toast type provided. Expected "success", "error", or "info".',
+    );
+    return;
+  }
+
+  if (typeof message === "undefined") {
+    console.warn("No toast message provided. Expected a message string.");
+    return;
+  }
+
+  let icon;
+  switch (type) {
+    case "error":
+      icon = errorIcon;
+      break;
+    case "success":
+      icon = checkmarkIcon;
+      break;
+    case "info":
+      icon = infoIcon;
+      break;
+    default:
+      console.warn(`Unknown toast type "${type}". Falling back to 'info'.`);
+      icon = infoIcon;
+  }
+
   toastElement.innerHTML = `<span class="toast__icon">${icon}</span><p>${message}</p>`;
 
   toaster.appendChild(toastElement);
