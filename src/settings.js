@@ -66,86 +66,95 @@ effect(() => {
           const value = document.querySelector(
             'input[name="font-theme"]:checked',
           )?.value;
-          if (value) applyFont(value);
-        });
-      break;
-    case "change-password":
-      sidebar.innerHTML = changePasswordTemplate;
-
-      const changeForm = document.getElementById("change-password-form");
-      if (changeForm) {
-        changeForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const { data, error } = await supabase.auth.updateUser({
-            password: 'new password'
-          })
-          
-          if (error) {
-            // notify the user
-          } else {
-            // notify the user
-            console.log("User's password changed successfully")
-            console.log(data)
+          if (value) {
+            applyFont(value);
+            toast("success", "Font updated successfully");
           }
         });
-
-        attachShowPassword(changeForm);
-      }
       break;
-    default:
-      sidebar.innerHTML = colorThemeTemplate;
+    }
+
+    case "change-password": {
+      settingsView.innerHTML = changePasswordTemplate;
+
+      const form = document.getElementById("change-password-form");
+      if (!form) return;
+
+      attachShowPassword(form);
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const values = Object.fromEntries(new FormData(form));
+        const newPassword = (values["new-password"] ?? "").toString().trim();
+        const confirmPassword = (values["confirm-new-password"] ?? "")
+          .toString()
+          .trim();
+
+        if (newPassword !== confirmPassword) {
+          toast("error", "Passwords do not match");
+          return;
+        }
+
+        if (newPassword.length < 8) {
+          toast("error", "New password must be at least 8 characters");
+          return;
+        }
+
+        const submitButton = document.getElementById(
+          "change-password-submit-button",
+        );
+        const prevDisabled = submitButton?.disabled;
+        const prevText = submitButton?.textContent;
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Saving...";
+        }
+
+        try {
+          const { data, error } = await supabase.auth.updateUser({
+            password: newPassword,
+          });
+          if (error) {
+            throw error;
+          }
+          toast("success", "Password updated successfully");
+          form.reset();
+        } catch (err) {
+          toast("error", "Something went wrong");
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = !!prevDisabled;
+            submitButton.textContent = prevText ?? "Save Password";
+          }
+        }
+      });
+      break;
+    }
+
+    default: {
+      settingsView.innerHTML = colorThemeTemplate;
+
       const savedTheme = localStorage.getItem("theme") ?? "system";
-      let savedThemeEl = document.querySelector(
+      const savedThemeEl = document.querySelector(
         `input[name="color-theme"][value="${savedTheme}"]`,
       );
       if (savedThemeEl) savedThemeEl.checked = true;
+
       document
         .getElementById("color-theme-submit-button")
-        .addEventListener("click", async (e) => {
+        .addEventListener("click", (e) => {
           e.preventDefault();
+          const value = document.querySelector(
+            'input[name="color-theme"]:checked',
+          )?.value;
+          if (value) {
+            applyTheme(value);
+            toast("success", "Theme updated successfully");
+          }
         });
-      break;
+    }
   }
-}
-
-function updateTab() {
-  for (const [tab, button] of Object.entries(TABS)) {
-    button.classList.toggle("sidebar__button__secondary", tab === currentTab);
-    button.classList.toggle("sidebar__button", tab !== currentTab);
-  }
-}
-
-for (const [tab, button] of Object.entries(TABS)) {
-  button.addEventListener("click", () => {
-    currentTab = tab;
-    renderContent();
-    updateTab();
-  });
-}
+});
 
 loadTheme();
 loadFont();
-updateTab();
-renderContent();
-
-document // this could be redundant
-  .getElementById("color-theme-submit-button")
-  .addEventListener("click", (e) => {
-    e.preventDefault();
-    const value = document.querySelector(
-      'input[name="color-theme"]:checked',
-    )?.value;
-    if (value) applyTheme(value);
-  });
-
-document
-  .getElementById("logout-button")
-  .addEventListener("click", async (e) => {
-    try {
-      await signOut();
-      window.location.href = "/auth/login.html";
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  });
