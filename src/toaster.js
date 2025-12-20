@@ -38,12 +38,6 @@ const errorIcon = `
  * @param {number} [duration=3000] - The duration in milliseconds to show the toast. Defaults to 3000ms.
  */
 export default function toast(type, message, duration = 3000) {
-  if (!toaster) {
-    // TODO: Remove this before shipping
-    console.warn("No .toaster element found to display notifications.");
-    return;
-  }
-
   const toastElement = document.createElement("div");
   toastElement.classList.add("toast", "text-preset-5");
 
