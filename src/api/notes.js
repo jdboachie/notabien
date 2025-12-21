@@ -92,3 +92,33 @@ export async function fetchNotes(isArchived = false) {
     return data;
   }
 }
+
+/**
+ * Delete a note by id. Only notes owned by the current user may be deleted.
+ *
+ * @param {string|number} id - The id of the note to delete.
+ * @returns {Promise<Object>} The deleted note record as returned by Supabase.
+ * @throws {TypeError} If `id` is not provided.
+ * @throws {Error} If Supabase returns an error during the deletion.
+ */
+export async function deleteNote(id) {
+  if (!id && id !== 0) {
+    throw new TypeError("Missing note id");
+  }
+
+  let { id: userId } = await getCurrentUser();
+
+  const { data, error } = await supabase
+    .from("notes")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error);
+  }
+
+  return data;
+}

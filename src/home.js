@@ -1,12 +1,15 @@
 import ensureAuth from "./auth.js";
-import { fetchNotes, upsertNote } from "./api/notes.js";
+import { fetchNotes, upsertNote, deleteNote } from "./api/notes.js";
 import { effect, get, set, state } from "./signals.js";
 import {
+  separator,
   archivedNotesEmptyState,
   createEditorTemplate,
   createNoteListItemTemplate,
   noteListEmptyStateTemplate,
-  separator,
+  restoreNoteModalTemplate,
+  archiveNoteModalTemplate,
+  deleteNoteModalTemplate,
 } from "./templates.js";
 import { loadTheme, loadFont } from "./theme.js";
 import toast from "./toaster.js";
@@ -21,6 +24,7 @@ const TABS = {
 };
 
 const pageTitle = document.getElementById("page-title");
+const modalOverlay = document.querySelector(".modal__overlay");
 const noteView = document.getElementById("note-view");
 const noteList = document.getElementById("note-list");
 
@@ -52,15 +56,21 @@ for (const [tab, button] of Object.entries(TABS)) {
   });
 }
 
-document.getElementById("create-note-button").addEventListener("click", (e) => {
-  e.preventDefault();
-  noteView.innerHTML = createEditorTemplate();
-  if (get(currentTab) !== "all") {
-    set(currentTab, "all");
-    set(notes, null);
-  }
-  set(activeNoteId, "new");
+modalOverlay.addEventListener("click", (_event) => {
+  modalOverlay.hidden = true;
+  modalOverlay.innerHTML = "";
 });
+
+document
+  .getElementById("create-note-button")
+  .addEventListener("click", (event) => {
+    event.preventDefault();
+    if (get(currentTab) !== "all") {
+      set(currentTab, "all");
+      set(notes, null);
+    }
+    set(activeNoteId, "new");
+  });
 
 effect(async () => {
   const data = await fetchNotes(get(currentTab) === "archived");
@@ -72,7 +82,6 @@ effect(() => {
   const tab = get(currentTab);
   const id = get(activeNoteId);
 
-  // Render note list
   if (data === null) {
     noteList.innerHTML = Array(10)
       .fill(`<div class="skeleton"></div>`)
@@ -126,6 +135,137 @@ effect(() => {
       active.last_edited,
       active.is_archived,
     );
+  }
+
+  const archiveButton = document.getElementById("archive-note-trigger");
+  if (archiveButton && !archiveButton.dataset.bound) {
+    archiveButton.dataset.bound = "true";
+    archiveButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      const shouldArchive = get(currentTab) === "all";
+
+      modalOverlay.innerHTML = shouldArchive
+        ? archiveNoteModalTemplate
+        : restoreNoteModalTemplate;
+      modalOverlay.hidden = false;
+
+      const modalEl = modalOverlay.querySelector(".modal");
+      if (modalEl)
+        modalEl.addEventListener("click", (e) => e.stopPropagation());
+
+      const confirmBtn = document.getElementById("confirm-archive-note-button");
+      const cancelBtn = document.getElementById("cancel-archive-note-button");
+
+      confirmBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        confirmBtn.disabled = true;
+        try {
+          const id = get(activeNoteId);
+          if (!id || id === "new") {
+            toast("error", "No note selected");
+            return;
+          }
+          const currentList = get(notes) || [];
+          const existing = currentList.find((n) => String(n.id) === String(id));
+          if (!existing) {
+            toast("error", "Note not found");
+            return;
+          }
+
+          const payload = {
+            ...existing,
+            id: existing.id,
+            is_archived: shouldArchive,
+          };
+          const saved = await upsertNote(payload);
+          toast(
+            "success",
+            `Note ${shouldArchive ? "archived" : "restored"} successfully`,
+          );
+
+          if (get(currentTab) === "all") {
+            set(
+              notes,
+              get(notes).filter((n) => String(n.id) !== String(saved.id)),
+            );
+            set(currentTab, "archived");
+            noteView.innerHTML = "";
+          } else {
+            set(currentTab, "all");
+            set(
+              notes,
+              get(notes).map((n) =>
+                n.id === saved.id ? { ...n, ...saved } : n,
+              ),
+            );
+          }
+        } catch (err) {
+          toast("error", "Failed to archive note");
+        } finally {
+          confirmBtn.disabled = false;
+          modalOverlay.hidden = true;
+          modalOverlay.innerHTML = "";
+        }
+      });
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          modalOverlay.hidden = true;
+          modalOverlay.innerHTML = "";
+        });
+      }
+    });
+  }
+
+  const deleteNoteButton = document.getElementById("delete-note-trigger");
+  if (deleteNoteButton && !deleteNoteButton.dataset.bound) {
+    deleteNoteButton.dataset.bound = "true";
+    deleteNoteButton.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      modalOverlay.innerHTML = deleteNoteModalTemplate;
+      modalOverlay.hidden = false;
+
+      const modalEl = modalOverlay.querySelector(".modal");
+      if (modalEl)
+        modalEl.addEventListener("click", (e) => e.stopPropagation());
+
+      const confirmBtn = document.getElementById("confirm-delete-note-button");
+      const cancelBtn = document.getElementById("cancel-delete-note-button");
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          confirmBtn.disabled = true;
+          try {
+            const id = get(activeNoteId);
+            await deleteNote(id);
+            toast("success", "Note deleted successfully");
+
+            set(
+              notes,
+              get(notes).filter((n) => String(n.id) !== String(id)),
+            );
+            set(activeNoteId, get(notes)[0].id);
+          } catch (err) {
+            toast("error", "Failed to delete note");
+          } finally {
+            confirmBtn.disabled = false;
+            modalOverlay.hidden = true;
+            modalOverlay.innerHTML = "";
+          }
+        });
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          modalOverlay.hidden = true;
+          modalOverlay.innerHTML = "";
+        });
+      }
+    });
   }
 });
 

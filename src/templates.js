@@ -114,14 +114,35 @@ export function createEditorTemplate(
   ${
     title
       ? `<aside class="sidebar right__sidebar">
-      <button class="btn sidebar__button__outline">
-          <svg
+      <button class="btn sidebar__button__outline" id="archive-note-trigger">
+          ${
+            isArchived
+              ? `<svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#0E121B"
+                      fill-rule="evenodd"
+                      d="M3.708 7.404a.75.75 0 0 1 .983.398l1.316 3.114L9.1 9.608a.75.75 0 0 1 .584 1.382L5.9 12.59a.75.75 0 0 1-.983-.4L3.309 8.387a.75.75 0 0 1 .4-.982Z" clip-rule="evenodd"
+                    />
+                    <path
+                      fill="#0E121B"
+                      fill-rule="evenodd"
+                      d="M12.915 5.664c-3.447 0-6.249 2.746-6.335 6.16a.75.75 0 0 1-1.5-.038c.108-4.228 3.575-7.622 7.835-7.622a7.838 7.838 0 0 1 7.835 7.835 7.833 7.833 0 0 1-7.835 7.835 7.843 7.843 0 0 1-6.457-3.384.75.75 0 1 1 1.232-.856 6.343 6.343 0 0 0 5.225 2.74 6.333 6.333 0 0 0 6.335-6.335 6.339 6.339 0 0 0-6.335-6.335Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>`
+              : `<svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
               fill="none"
               viewBox="0 0 24 24"
-          >
+            >
               <path
                   stroke="currentColor"
                   stroke-linecap="round"
@@ -136,10 +157,11 @@ export function createEditorTemplate(
                   stroke-width="1.5"
                   d="m15 14-3.002 3L9 14M11.998 17v-7M20.934 7H3.059"
               />
-          </svg>
-          Archive Note
+          </svg>`
+          }
+          ${isArchived ? "Restore Note" : "Archive Note"}
       </button>
-      <button class="btn sidebar__button__outline">
+      <button class="btn sidebar__button__outline" id="delete-note-trigger">
           <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -181,6 +203,89 @@ export const noteListEmptyStateTemplate = `
       capture your thougts and ideas.
   </p>
   `;
+
+export const archiveNoteModalTemplate = `
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-archive-title" aria-describedby="modal-archive-desc">
+    <div class="modal__header">
+      <div class="modal__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 7.782v8.435C21 19.165 18.919 21 15.974 21H8.026C5.081 21 3 19.165 3 16.216V7.782C3 4.834 5.081 3 8.026 3h7.948C18.919 3 21 4.843 21 7.782Z" />
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m15 14-3.002 3L9 14M11.998 17v-7M20.934 7H3.059" />
+        </svg>
+      </div>
+      <div class="modal__body">
+        <h3 class="modal__title text-preset-3">Archive Note</h3>
+        <p class="modal__description text-preset-5">
+          Are you sure you want to archive this note? You can find it in the Archived Notes section and restore it anytime.
+        </p>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button id="cancel-archive-note-button" type="button" class="btn btn__secondary modal__button modal__button--cancel">Cancel</button>
+      <button id="confirm-archive-note-button" type="button" class="btn btn__default modal__button modal__button--confirm">Archive Note</button>
+    </div>
+  </div>
+`;
+
+export const restoreNoteModalTemplate = `
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-archive-title" aria-describedby="modal-archive-desc">
+    <div class="modal__header">
+      <div class="modal__icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="#0E121B"
+            fill-rule="evenodd"
+            d="M3.708 7.404a.75.75 0 0 1 .983.398l1.316 3.114L9.1 9.608a.75.75 0 0 1 .584 1.382L5.9 12.59a.75.75 0 0 1-.983-.4L3.309 8.387a.75.75 0 0 1 .4-.982Z" clip-rule="evenodd"
+          />
+          <path
+            fill="#0E121B"
+            fill-rule="evenodd"
+            d="M12.915 5.664c-3.447 0-6.249 2.746-6.335 6.16a.75.75 0 0 1-1.5-.038c.108-4.228 3.575-7.622 7.835-7.622a7.838 7.838 0 0 1 7.835 7.835 7.833 7.833 0 0 1-7.835 7.835 7.843 7.843 0 0 1-6.457-3.384.75.75 0 1 1 1.232-.856 6.343 6.343 0 0 0 5.225 2.74 6.333 6.333 0 0 0 6.335-6.335 6.339 6.339 0 0 0-6.335-6.335Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <div class="modal__body">
+        <h3 class="modal__title text-preset-3">Restore Note</h3>
+        <p class="modal__description text-preset-5">
+          Are you sure you want to restore this note? You can find it in the All Notes section and archive it anytime.
+        </p>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button id="cancel-archive-note-button" type="button" class="btn btn__secondary modal__button modal__button--cancel">Cancel</button>
+      <button id="confirm-archive-note-button" type="button" class="btn btn__default modal__button modal__button--confirm">Restore Note</button>
+    </div>
+  </div>
+`;
+
+export const deleteNoteModalTemplate = `
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-delete-title" aria-describedby="modal-delete-desc">
+    <div class="modal__header">
+      <div class="modal__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" fill="none" viewBox="0 0 24 25">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m14.852 3.879.818 1.785h2.64c.811 0 1.47.658 1.47 1.47V8.22c0 .555-.45 1.005-1.006 1.005H5.005C4.45 9.226 4 8.776 4 8.221V7.133c0-.811.658-1.47 1.47-1.47h2.639l.818-1.784c.246-.536.78-.879 1.37-.879h3.185c.59 0 1.125.343 1.37.879ZM18.24 9.3v8.686c0 1.665-1.333 3.014-2.977 3.014H8.517c-1.644 0-2.977-1.349-2.977-3.014V9.301M10.2 12.816v4.509m3.38-4.509v4.509" />
+        </svg>
+      </div>
+      <div class="modal__body">
+        <h3 class="modal__title text-preset-3">Delete Note</h3>
+        <p class="modal__description text-preset-5">
+          Are you sure you want to permanently delete this note? This action cannot be undone.
+        </p>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button id="cancel-delete-note-button" type="button" class="btn btn__secondary modal__button modal__button--cancel">Cancel</button>
+      <button id="confirm-delete-note-button" type="button" class="btn btn__danger modal__button modal__button--danger">Delete Note</button>
+    </div>
+  </div>
+`;
 
 /**
  * Builds a note list item template based on the input.

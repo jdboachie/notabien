@@ -424,6 +424,16 @@ input:focus {
     background-color: var(--primary-hover);
 }
 
+.btn__danger {
+    background-color: var(--color-red-500);
+    color: var(--primary-foreground);
+    border-color: var(--color-red-500);
+}
+
+.btn__danger:hover {
+    filter: brightness(0.95); /* TODO: verify this */
+}
+
 .btn__secondary {
     background-color: var(--secondary);
     border: none;
@@ -927,6 +937,57 @@ input[type="search"] {
 .toast__icon svg {
     width: 24px;
     height: 24px;
+}
+
+.modal__overlay {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inset: 0;
+    background-color: hsla(222, 32%, 8%, 0.6);
+}
+
+.modal__overlay[hidden] {
+    display: none;
+}
+
+.modal {
+    width: 440px;
+    min-height: 175px;
+    border-radius: var(--radius-12);
+    background-color: var(--surface);
+}
+
+.modal__header {
+    border-bottom: 1px solid var(--border-light);
+    padding: var(--spacing-250);
+    display: flex;
+    gap: var(--spacing-200);
+}
+
+.modal__icon {
+    min-width: 40px;
+    max-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-8);
+    background-color: var(--secondary);
+}
+
+.modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-075);
+}
+
+.modal__footer {
+    display: flex;
+    padding: var(--spacing-200);
+    gap: var(--spacing-200);
+    justify-content: flex-end;
+    align-items: center;
 }
 
 @media (max-width: 768px) {
