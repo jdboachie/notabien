@@ -15,6 +15,7 @@ import {
   restoreNoteModalTemplate,
   archiveNoteModalTemplate,
   deleteNoteModalTemplate,
+  sidebarTagListTemplate,
 } from "./templates.js";
 import { loadTheme, loadFont } from "./theme.js";
 import toast from "./toaster.js";
@@ -33,6 +34,7 @@ const modalOverlay = document.querySelector(".modal__overlay");
 const noteView = document.getElementById("note-view");
 const noteList = document.getElementById("note-list");
 const searchInput = document.getElementById("search");
+const sidebarTagsSection = document.getElementById("sidebar-tags-section");
 
 const params = new URLSearchParams(window.location.search);
 const initialQuery = params.get("query") || null;
@@ -67,10 +69,7 @@ function updateTabUI() {
       "sidebar__button__secondary",
       tab === get(currentTab),
     );
-    button.classList.toggle(
-      "sidebar__button__active",
-      tab === get(currentTab),
-    );
+    button.classList.toggle("sidebar__button__active", tab === get(currentTab));
     button.classList.toggle("sidebar__button", tab !== get(currentTab));
   }
 }
@@ -78,9 +77,11 @@ function updateTabUI() {
 for (const [tab, button] of Object.entries(TABS)) {
   if (!button) continue;
   button.addEventListener("click", () => {
+    set(searchQuery, null);
+    searchInput.value = null;
     if (get(currentTab) === tab) return;
-    set(notes, null);
     set(currentTab, tab);
+    set(notes, null);
     noteView.innerHTML = "";
   });
 }
@@ -107,13 +108,14 @@ document
       set(notes, null);
     }
     set(activeNoteId, "new");
+    set(searchQuery, null);
   });
 
 effect(async () => {
   const cur = get(currentTab);
   const q = get(searchQuery);
   let data;
-  if (q === null) {
+  if (!q) {
     data = await fetchFilteredNotes(cur === "archived");
   } else {
     const all = await fetchAllNotes();
@@ -136,14 +138,25 @@ effect(() => {
   const data = get(notes);
   const tab = get(currentTab);
   const id = get(activeNoteId);
+  const q = get(searchQuery);
 
   if (data === null) {
     noteList.innerHTML = Array(10)
       .fill(`<div class="skeleton"></div>`)
       .join("");
   } else if (!data.length) {
-    noteList.innerHTML =
-      tab === "archived" ? archivedNotesEmptyState : noteListEmptyStateTemplate;
+    if (q) {
+      noteList.innerHTML = `
+        <p class="note__list__empty text-preset-5">
+          No notes match your search. Try a different keyword or create a new note.
+        </p>
+      `;
+    } else {
+      noteList.innerHTML =
+        tab === "archived"
+          ? archivedNotesEmptyState
+          : noteListEmptyStateTemplate;
+    }
   } else {
     noteList.innerHTML =
       tab === "archived"
@@ -303,7 +316,6 @@ effect(() => {
               get(notes).filter((n) => String(n.id) !== String(id)),
             );
           } catch (err) {
-            console.log(err)
             toast("error", "Failed to delete note");
           } finally {
             confirmBtn.disabled = false;
@@ -313,8 +325,8 @@ effect(() => {
           try {
             set(activeNoteId, get(notes)[0].id);
           } catch (error) {
-            set(activeNoteId, null)
-            noteView.innerHTML = ''
+            set(activeNoteId, null);
+            noteView.innerHTML = "";
           }
         });
       }
@@ -349,6 +361,54 @@ effect(() => {
   if (q) p.set("query", q);
 
   history.replaceState(null, "", `?${p.toString()}`);
+});
+
+effect(async () => {
+  get(notes);
+
+  try {
+    const all = (await fetchAllNotes()) || [];
+    const counts = {};
+    all.forEach((note) => {
+      (note.tags || []).forEach((t) => {
+        if (!t) return;
+        counts[t] = (counts[t] || 0) + 1;
+      });
+    });
+
+    const tagList = Object.keys(counts)
+      .map((name) => ({ name, count: counts[name] }))
+      .sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+      );
+
+    if (!sidebarTagsSection) return;
+
+    sidebarTagsSection.innerHTML = sidebarTagListTemplate(tagList);
+    sidebarTagsSection.querySelectorAll("button[data-tag]").forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const tag = btn.dataset.tag;
+        // Use existing search mechanism: set the searchQuery and update the visible search input,
+        // then switch to the 'all' tab and clear active note selection.
+        if (!tag) return;
+        // Update the signal used for filtering
+        set(searchQuery, tag);
+        // Ensure the search input reflects the selected tag so the user sees the active filter
+        if (searchInput) {
+          searchInput.value = tag;
+          // Trigger the existing input handler so all related behavior runs consistently
+          searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        set(currentTab, "all");
+        set(activeNoteId, null);
+      });
+    });
+  } catch (err) {
+    console.error("Failed to load sidebar tags", err);
+  }
 });
 
 effect(() => {
