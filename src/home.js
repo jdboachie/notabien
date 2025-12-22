@@ -43,15 +43,11 @@ const notes = state(null);
 const activeNoteId = state(params.get("activeNote"));
 const searchQuery = state(initialQuery);
 
-// If a query was provided in the URL, pre-fill the search input so DOM and state stay in sync.
 if (searchInput && initialQuery) {
   searchInput.value = initialQuery;
-  // Dispatch an input event so any listeners react to this initial value.
   searchInput.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-// Focus the search input if requested via URL (e.g. ?focusInput=true).
-// Defer to the next paint to ensure focus works reliably (element is focusable and not blurred by later scripts).
 if (
   searchInput &&
   (params.get("focusInput") === "true" || params.has("focusInput"))
@@ -59,11 +55,8 @@ if (
   requestAnimationFrame(() => {
     try {
       searchInput.focus();
-      // Select the input contents to hint intent and place caret at the end on some browsers.
       if (typeof searchInput.select === "function") searchInput.select();
-    } catch (err) {
-      // Ignore focus failures (browsers may block programmatic focus in some cases).
-    }
+    } catch (err) {}
   });
 }
 
