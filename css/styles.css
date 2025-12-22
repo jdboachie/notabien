@@ -557,9 +557,38 @@ input:focus {
     background-color: var(--hover);
 }
 
+.sidebar__button__active {
+    justify-content: start;
+    border: none;
+    padding-left: var(--spacing-100);
+    background-color: var(--secondary);
+    position: relative;
+    padding-right: calc(var(--spacing-300) + 24px);
+}
+
+.sidebar__button__active > svg {
+    color: var(--primary);
+}
+
+.sidebar__button__active::after {
+    content: "";
+    position: absolute;
+    right: var(--spacing-200);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    color: var(--foreground);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' viewBox='0 0 24 24'><path fill='currentColor' fill-rule='evenodd' d='M9.47 7.47a.75.75 0 0 1 1.06 0l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 1 1-1.06-1.06L12.94 12 9.47 8.53a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    pointer-events: none;
+}
+
 .sidebar__button > svg,
 .sidebar__button__outline > svg,
-.sidebar__button__secondary > svg {
+.sidebar__button__secondary > svg,
+.sidebar__button__active > svg {
     width: 20px;
     height: 20px;
 }
