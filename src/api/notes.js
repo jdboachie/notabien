@@ -71,7 +71,7 @@ export async function upsertNote(note) {
 /**
  * Fetch notes from the "notes" table.
  *
- * Optionally filters notes by their archived state. Results are ordered by
+ * Filters notes by their archived state. Results are ordered by
  * the "last_edited" column in descending order.
  *
  * @param {boolean} [isArchived=false] - When true, only archived notes are returned;
@@ -79,11 +79,24 @@ export async function upsertNote(note) {
  * @returns {Promise<Object[]>} A promise that resolves to an array of note records as returned by Supabase.
  * @throws {Error} If Supabase returns an error during the query.
  */
-export async function fetchNotes(isArchived = false) {
+export async function fetchFilteredNotes(isArchived = false) {
   let { data, error } = await supabase
     .from("notes")
     .select("*")
     .eq("is_archived", isArchived)
+    .order("last_edited", { ascending: false });
+
+  if (error) {
+    throw new Error(error);
+  } else {
+    return data;
+  }
+}
+
+export async function fetchAllNotes() {
+  let { data, error } = await supabase
+    .from("notes")
+    .select("*")
     .order("last_edited", { ascending: false });
 
   if (error) {

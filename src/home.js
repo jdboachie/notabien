@@ -1,5 +1,10 @@
 import ensureAuth from "./auth.js";
-import { fetchNotes, upsertNote, deleteNote } from "./api/notes.js";
+import {
+  fetchFilteredNotes,
+  upsertNote,
+  deleteNote,
+  fetchAllNotes,
+} from "./api/notes.js";
 import { effect, get, set, state } from "./signals.js";
 import {
   separator,
@@ -27,13 +32,40 @@ const pageTitle = document.getElementById("page-title");
 const modalOverlay = document.querySelector(".modal__overlay");
 const noteView = document.getElementById("note-view");
 const noteList = document.getElementById("note-list");
+const searchInput = document.getElementById("search");
 
 const params = new URLSearchParams(window.location.search);
+const initialQuery = params.get("query") || null;
 const initialTab = params.get("tab") === "archived" ? "archived" : "all";
 
 const currentTab = state(initialTab);
 const notes = state(null);
 const activeNoteId = state(params.get("activeNote"));
+const searchQuery = state(initialQuery);
+
+// If a query was provided in the URL, pre-fill the search input so DOM and state stay in sync.
+if (searchInput && initialQuery) {
+  searchInput.value = initialQuery;
+  // Dispatch an input event so any listeners react to this initial value.
+  searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+// Focus the search input if requested via URL (e.g. ?focusInput=true).
+// Defer to the next paint to ensure focus works reliably (element is focusable and not blurred by later scripts).
+if (
+  searchInput &&
+  (params.get("focusInput") === "true" || params.has("focusInput"))
+) {
+  requestAnimationFrame(() => {
+    try {
+      searchInput.focus();
+      // Select the input contents to hint intent and place caret at the end on some browsers.
+      if (typeof searchInput.select === "function") searchInput.select();
+    } catch (err) {
+      // Ignore focus failures (browsers may block programmatic focus in some cases).
+    }
+  });
+}
 
 function updateTabUI() {
   for (const [tab, button] of Object.entries(TABS)) {
@@ -56,6 +88,14 @@ for (const [tab, button] of Object.entries(TABS)) {
   });
 }
 
+searchInput.addEventListener("input", (event) => {
+  if (event.target.value) {
+    set(searchQuery, event.target.value);
+  } else {
+    set(searchQuery, null);
+  }
+});
+
 modalOverlay.addEventListener("click", (_event) => {
   modalOverlay.hidden = true;
   modalOverlay.innerHTML = "";
@@ -73,7 +113,25 @@ document
   });
 
 effect(async () => {
-  const data = await fetchNotes(get(currentTab) === "archived");
+  const cur = get(currentTab);
+  const q = get(searchQuery);
+  let data;
+  if (q === null) {
+    data = await fetchFilteredNotes(cur === "archived");
+  } else {
+    const all = await fetchAllNotes();
+    const qLower = String(q).toLowerCase().trim();
+    data = (all || []).filter((note) => {
+      const title = String(note.title || "").toLowerCase();
+      const content = String(note.content || "").toLowerCase();
+      const tags = (note.tags || []).join(" ").toLowerCase();
+      return (
+        title.includes(qLower) ||
+        content.includes(qLower) ||
+        tags.includes(qLower)
+      );
+    });
+  }
   set(notes, data);
 });
 
@@ -272,13 +330,20 @@ effect(() => {
 effect(() => {
   const tab = get(currentTab);
   const id = get(activeNoteId);
+  const q = get(searchQuery);
 
-  pageTitle.innerText = tab === "all" ? "All Notes" : "Archived Notes";
+  if (q) {
+    pageTitle.innerHTML = `<p class="text-muted">Showing results for:</p> ${get(searchQuery)}`;
+  } else {
+    pageTitle.innerText = tab === "all" ? "All Notes" : "Archived Notes";
+  }
+
   updateTabUI();
 
   const p = new URLSearchParams();
   p.set("tab", tab);
   if (id) p.set("activeNote", id);
+  if (q) p.set("query", q);
 
   history.replaceState(null, "", `?${p.toString()}`);
 });
@@ -289,9 +354,36 @@ effect(() => {
 
   editor.dataset.bound = "true";
 
+  const titleInput = editor.querySelector("#editor-title");
+  const saveBtn = editor.querySelector("#save-note-button");
+
+  const updateSaveState = () => {
+    if (!saveBtn) return;
+    const hasTitle = titleInput && String(titleInput.value).trim().length > 0;
+    saveBtn.disabled = !hasTitle;
+  };
+
+  updateSaveState();
+
+  if (titleInput) {
+    titleInput.addEventListener("input", updateSaveState);
+  }
+
+  editor.addEventListener("reset", () => {
+    setTimeout(updateSaveState, 0);
+  });
+
   editor.addEventListener("submit", async (e) => {
     e.preventDefault();
-    document.getElementById("save-note-button").disabled = true;
+
+    const titleVal = titleInput ? String(titleInput.value).trim() : "";
+    if (!titleVal) {
+      toast("error", "Please add a title for your note");
+      updateSaveState();
+      return;
+    }
+
+    if (saveBtn) saveBtn.disabled = true;
 
     const fd = new FormData(e.target);
     let payload = Object.fromEntries(fd.entries());
@@ -303,14 +395,19 @@ effect(() => {
     const id = get(activeNoteId);
     if (id && id !== "new") payload.id = id;
 
-    const saved = await upsertNote(payload);
-    toast("success", "Note saved successfully");
+    try {
+      const saved = await upsertNote(payload);
+      toast("success", "Note saved successfully");
 
-    set(
-      notes,
-      get(notes).map((n) => (n.id === saved.id ? { ...n, ...saved } : n)),
-    );
-    set(currentTab, "all");
-    set(activeNoteId, saved.id);
+      set(
+        notes,
+        get(notes).map((n) => (n.id === saved.id ? { ...n, ...saved } : n)),
+      );
+      set(currentTab, "all");
+      set(activeNoteId, saved.id);
+    } catch (err) {
+      toast("error", "Failed to save note");
+      if (saveBtn) saveBtn.disabled = false;
+    }
   });
 });

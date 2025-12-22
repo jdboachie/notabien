@@ -24,6 +24,7 @@ document.getElementById("logout-button").addEventListener("click", async () => {
 });
 
 const settingsView = document.getElementById("settings-view");
+const searchInput = document.getElementById("search");
 const TABS = {
   "color-theme": document.getElementById("color-theme-tab-button"),
   "font-theme": document.getElementById("font-theme-tab-button"),
@@ -36,6 +37,10 @@ for (const [tab, button] of Object.entries(TABS)) {
     set(currentTab, tab);
   });
 }
+
+searchInput.addEventListener("focus", (event) => {
+    window.location.href = `/index.html?query=${event.target.value}&focusSearch=true`;
+});
 
 effect(() => {
   const tab = get(currentTab);

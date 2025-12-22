@@ -21,6 +21,7 @@ export function createEditorTemplate(
         name="title"
         class="editor__title text-preset-1"
         placeholder="Enter a title..."
+        required
         ${title ? `value="${title}"` : ""}
     />
       <div class="editor__metadata">
@@ -107,7 +108,7 @@ export function createEditorTemplate(
           placeholder="Start typing your note here..."
       >${content ?? ""}</textarea>
     <div class="bottombar">
-        <button type="submit" id="save-note-button" class="btn btn__default">Save Note</button>
+        <button type="submit" id="save-note-button" class="btn btn__default" ${title ? "" : "disabled"}>Save Note</button>
         <button type="reset" id="cancel-button" class="btn btn__secondary">Cancel</button>
     </div>
   </form>
