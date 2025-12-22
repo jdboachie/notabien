@@ -1,4 +1,16 @@
 /**
+ * Escape HTML to prevent XSS when injecting user content into templates.
+ * @param {string} str
+ */
+const escapeHtml = (str) =>
+  String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+/**
  * Builds an editor based on the input.
  * @param {string} title
  * @param {string} content
@@ -22,7 +34,7 @@ export function createEditorTemplate(
         class="editor__title text-preset-1"
         placeholder="Enter a title..."
         required
-        ${title ? `value="${title}"` : ""}
+        ${title ? `value="${escapeHtml(title)}"` : ""}
     />
       <div class="editor__metadata">
           <div class="metadata__field">
@@ -54,7 +66,7 @@ export function createEditorTemplate(
               <input
                 name="tags"
                 class="metadata__field__value tag__input"
-                ${tags ? `value="${tags.join(", ")}"` : ""}
+                ${tags ? `value="${escapeHtml(tags.join(", "))}"` : ""}
                 placeholder="Add tags separated by commas (e.g. Work, Planning)"
                />
           </div>
@@ -97,7 +109,7 @@ export function createEditorTemplate(
                 Last Edited
               </p>
               <p class="metadata__field__value text-preset-6">
-                ${lastEdited ? new Date(lastEdited).toDateString() : "not yet saved"}
+                ${lastEdited ? escapeHtml(new Date(lastEdited).toDateString()) : "not yet saved"}
               </p>
           </div>
       </div>
@@ -106,7 +118,7 @@ export function createEditorTemplate(
           name="content"
           class="editor__textarea text-preset-5"
           placeholder="Start typing your note here..."
-      >${content ?? ""}</textarea>
+      >${escapeHtml(content ?? "")}</textarea>
     <div class="bottombar">
         <button type="submit" id="save-note-button" class="btn btn__default" ${title ? "" : "disabled"}>Save Note</button>
         <button type="reset" id="cancel-button" class="btn btn__secondary">Cancel</button>
@@ -299,17 +311,17 @@ export function createNoteListItemTemplate(title, tags, lastEdited) {
   return `
     <li class="note__list__item">
       <button class="note__list__inner">
-        <h3 class="text-preset-3 list__item__title">${title}</h3>
+        <h3 class="text-preset-3 list__item__title">${escapeHtml(title)}</h3>
         <ul class="note__tags__list">
           ${tags
             .map(
               (tag) => `
-                <li class="note__tag text-preset-6">${tag}</li>
+                <li class="note__tag text-preset-6">${escapeHtml(tag)}</li>
               `,
             )
             .join("")}
         </ul>
-        <p class="text-preset-6">${new Date(lastEdited).toDateString()}</p>
+        <p class="text-preset-6">${escapeHtml(new Date(lastEdited).toDateString())}</p>
       </button>
     </li>
   `;
@@ -570,14 +582,6 @@ export const changePasswordTemplate = `
 `;
 
 export function sidebarTagListTemplate(tags = []) {
-  const escapeHtml = (str) =>
-    String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-
   if (!Array.isArray(tags) || !tags.length) {
     return `
       <p class="sidebar__group__label text-preset-4">Tags</p>
@@ -587,7 +591,6 @@ export function sidebarTagListTemplate(tags = []) {
     `;
   }
 
-  // Merge duplicates (case-insensitive) and sum counts
   const map = tags.reduce((acc, { name, count }) => {
     const key = name.toLowerCase();
     if (!acc[key]) acc[key] = { name, count: Number(count) || 0 };

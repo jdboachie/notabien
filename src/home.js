@@ -391,15 +391,10 @@ effect(async () => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
         const tag = btn.dataset.tag;
-        // Use existing search mechanism: set the searchQuery and update the visible search input,
-        // then switch to the 'all' tab and clear active note selection.
         if (!tag) return;
-        // Update the signal used for filtering
         set(searchQuery, tag);
-        // Ensure the search input reflects the selected tag so the user sees the active filter
         if (searchInput) {
           searchInput.value = tag;
-          // Trigger the existing input handler so all related behavior runs consistently
           searchInput.dispatchEvent(new Event("input", { bubbles: true }));
         }
         set(currentTab, "all");
