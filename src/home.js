@@ -67,6 +67,10 @@ function updateTabUI() {
       "sidebar__button__secondary",
       tab === get(currentTab),
     );
+    button.classList.toggle(
+      "sidebar__button__active",
+      tab === get(currentTab),
+    );
     button.classList.toggle("sidebar__button", tab !== get(currentTab));
   }
 }
@@ -298,13 +302,19 @@ effect(() => {
               notes,
               get(notes).filter((n) => String(n.id) !== String(id)),
             );
-            set(activeNoteId, get(notes)[0].id);
           } catch (err) {
+            console.log(err)
             toast("error", "Failed to delete note");
           } finally {
             confirmBtn.disabled = false;
             modalOverlay.hidden = true;
             modalOverlay.innerHTML = "";
+          }
+          try {
+            set(activeNoteId, get(notes)[0].id);
+          } catch (error) {
+            set(activeNoteId, null)
+            noteView.innerHTML = ''
           }
         });
       }
