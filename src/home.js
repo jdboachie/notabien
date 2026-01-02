@@ -19,6 +19,12 @@ import {
 } from "./templates.js";
 import { loadTheme, loadFont } from "./theme.js";
 import toast from "./toaster.js";
+import {
+  initLocalNotes,
+  loadDraft,
+  saveDraft,
+  deleteDraft,
+} from "./storage.js";
 
 ensureAuth();
 loadTheme();
@@ -42,6 +48,7 @@ const initialTab = params.get("tab") === "archived" ? "archived" : "all";
 
 const currentTab = state(initialTab);
 const notes = state(null);
+initLocalNotes(notes);
 const activeNoteId = state(params.get("activeNote"));
 const searchQuery = state(initialQuery);
 
@@ -61,6 +68,36 @@ if (
     } catch (err) {}
   });
 }
+
+function flushCurrentEditorDraft() {
+  const editor = document.getElementById("editor");
+  if (!editor) return;
+  const titleInput = editor.querySelector("#editor-title");
+  const tagsInput = editor.querySelector('input[name="tags"]');
+  const contentInput = editor.querySelector('textarea[name="content"]');
+  const id = get(activeNoteId) || "new";
+  const payload = {
+    title: titleInput ? String(titleInput.value) : "",
+    content: contentInput ? String(contentInput.value) : "",
+    tags: tagsInput
+      ? String(tagsInput.value)
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [],
+    last_edited: new Date().toISOString(),
+    is_archived:
+      (get(notes) || []).find((n) => String(n.id) === String(id))
+        ?.is_archived || false,
+  };
+  saveDraft(id, payload);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") flushCurrentEditorDraft();
+});
+
+window.addEventListener("beforeunload", () => flushCurrentEditorDraft());
 
 function updateTabUI() {
   for (const [tab, button] of Object.entries(TABS)) {
@@ -267,6 +304,8 @@ effect(() => {
               ),
             );
           }
+          deleteDraft(saved.id);
+          deleteDraft("new");
         } catch (err) {
           toast("error", "Failed to archive note");
         } finally {
@@ -315,6 +354,8 @@ effect(() => {
               notes,
               get(notes).filter((n) => String(n.id) !== String(id)),
             );
+            deleteDraft(id);
+            deleteDraft("new");
           } catch (err) {
             toast("error", "Failed to delete note");
           } finally {
@@ -413,6 +454,8 @@ effect(() => {
   editor.dataset.bound = "true";
 
   const titleInput = editor.querySelector("#editor-title");
+  const tagsInput = editor.querySelector('input[name="tags"]');
+  const contentInput = editor.querySelector('textarea[name="content"]');
   const saveBtn = editor.querySelector("#save-note-button");
 
   const updateSaveState = () => {
@@ -427,8 +470,52 @@ effect(() => {
     titleInput.addEventListener("input", updateSaveState);
   }
 
+  const currentId = get(activeNoteId);
+  const existingDraft = loadDraft(currentId || "new");
+  if (existingDraft) {
+    if (titleInput && typeof existingDraft.title !== "undefined") {
+      titleInput.value = existingDraft.title;
+    }
+    if (contentInput && typeof existingDraft.content !== "undefined") {
+      contentInput.value = existingDraft.content;
+    }
+    if (tagsInput && typeof existingDraft.tags !== "undefined") {
+      tagsInput.value = (existingDraft.tags || []).join(", ");
+    }
+    updateSaveState();
+  }
+
+  let draftTimer;
+  const scheduleDraftSave = () => {
+    if (draftTimer) clearTimeout(draftTimer);
+    draftTimer = setTimeout(() => {
+      const id = get(activeNoteId) || "new";
+      const tags = tagsInput
+        ? String(tagsInput.value || "")
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
+      const payload = {
+        title: titleInput ? String(titleInput.value) : "",
+        content: contentInput ? String(contentInput.value) : "",
+        tags,
+        last_edited: new Date().toISOString(),
+        is_archived:
+          (get(notes) || []).find((n) => String(n.id) === String(id))
+            ?.is_archived || false,
+      };
+      saveDraft(id, payload);
+    }, 500);
+  };
+
+  if (titleInput) titleInput.addEventListener("input", scheduleDraftSave);
+  if (contentInput) contentInput.addEventListener("input", scheduleDraftSave);
+  if (tagsInput) tagsInput.addEventListener("input", scheduleDraftSave);
+
   editor.addEventListener("reset", () => {
     setTimeout(updateSaveState, 0);
+    deleteDraft(get(activeNoteId) || "new");
   });
 
   editor.addEventListener("submit", async (e) => {
@@ -457,12 +544,17 @@ effect(() => {
       const saved = await upsertNote(payload);
       toast("success", "Note saved successfully");
 
-      set(
-        notes,
-        get(notes).map((n) => (n.id === saved.id ? { ...n, ...saved } : n)),
-      );
+      const current = get(notes) || [];
+      const updated = current.some((n) => String(n.id) === String(saved.id))
+        ? current.map((n) =>
+            String(n.id) === String(saved.id) ? { ...n, ...saved } : n,
+          )
+        : [saved, ...current];
+      set(notes, updated);
       set(currentTab, "all");
       set(activeNoteId, saved.id);
+      deleteDraft(saved.id);
+      deleteDraft("new");
     } catch (err) {
       toast("error", "Failed to save note");
       if (saveBtn) saveBtn.disabled = false;
