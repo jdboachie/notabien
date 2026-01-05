@@ -1,3 +1,4 @@
+import toast from "./toaster.js";
 import { signUp } from "./api/auth.js";
 import attachShowPassword from "./show-password.js";
 
