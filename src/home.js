@@ -148,6 +148,35 @@ document
     set(searchQuery, null);
   });
 
+document
+  .getElementById("export-notes-button")
+  .addEventListener("click", async (event) => {
+    event.preventDefault();
+    try {
+      toast("info", "Preparing notes export...");
+      const data = await fetchAllNotes();
+      if (!Array.isArray(data) || data.length === 0) {
+        toast("info", "No notes to export");
+        return;
+      }
+      const payload = JSON.stringify(data, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const ts = new Date().toISOString().replace(/[:.]/g, "-");
+      a.href = url;
+      a.download = `notabien-notes-${ts}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("success", `Exported ${data.length} notes`);
+    } catch (err) {
+      console.error("Export failed", err);
+      toast("error", "Failed to export notes");
+    }
+  });
+
 effect(async () => {
   const cur = get(currentTab);
   const q = get(searchQuery);
