@@ -11,6 +11,7 @@ document.getElementById("signup-form").addEventListener("submit", (e) => {
   signUp(obj.email, obj.password)
     .then(() => {
       toast("success", "Signed up successfully. Please confirm your email now");
+      window.location = "/";
     })
     .catch((error) => {
       toast("error", error);
