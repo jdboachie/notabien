@@ -24,6 +24,7 @@ import {
   loadDraft,
   saveDraft,
   deleteDraft,
+  loadAllNotes,
 } from "./storage.js";
 
 ensureAuth();
@@ -153,10 +154,9 @@ document
   .addEventListener("click", async (event) => {
     event.preventDefault();
     try {
-      toast("info", "Preparing notes export...");
-      const data = await fetchAllNotes();
+      const data = await loadAllNotes();
       if (!Array.isArray(data) || data.length === 0) {
-        toast("info", "No notes to export");
+        toast("error", "No notes to export");
         return;
       }
       const payload = JSON.stringify(data, null, 2);
