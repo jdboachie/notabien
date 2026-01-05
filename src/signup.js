@@ -1,4 +1,4 @@
-import { signUp } from "../api/auth.js";
+import { signUp } from "./api/auth.js";
 import attachShowPassword from "./show-password.js";
 
 document.getElementById("signup-form").addEventListener("submit", (e) => {
