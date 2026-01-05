@@ -24,6 +24,7 @@ import {
   loadDraft,
   saveDraft,
   deleteDraft,
+  loadAllNotes,
 } from "./storage.js";
 
 ensureAuth();
@@ -146,6 +147,34 @@ document
     }
     set(activeNoteId, "new");
     set(searchQuery, null);
+  });
+
+document
+  .getElementById("export-notes-button")
+  .addEventListener("click", async (event) => {
+    event.preventDefault();
+    try {
+      const data = await loadAllNotes();
+      if (!Array.isArray(data) || data.length === 0) {
+        toast("error", "No notes to export");
+        return;
+      }
+      const payload = JSON.stringify(data, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const ts = new Date().toISOString().replace(/[:.]/g, "-");
+      a.href = url;
+      a.download = `notabien-notes-${ts}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("success", `Exported ${data.length} notes`);
+    } catch (err) {
+      console.error("Export failed", err);
+      toast("error", "Failed to export notes");
+    }
   });
 
 effect(async () => {
