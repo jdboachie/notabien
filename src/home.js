@@ -25,6 +25,7 @@ import {
   saveDraft,
   deleteDraft,
   loadAllNotes,
+  replaceAllNotes,
 } from "./storage.js";
 
 ensureAuth();
@@ -438,6 +439,7 @@ effect(async () => {
 
   try {
     const all = (await fetchAllNotes()) || [];
+    replaceAllNotes(all);
     const counts = {};
     all.forEach((note) => {
       (note.tags || []).forEach((t) => {
