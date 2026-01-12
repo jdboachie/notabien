@@ -813,6 +813,29 @@ input[type="search"] {
     padding: var(--spacing-050) var(--spacing-100);
 }
 
+.editor__toolbar {
+    display: flex;
+    gap: var(--spacing-050);
+    padding-bottom: var(--spacing-100);
+}
+
+.editor__toolbar__button {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-8);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--foreground);
+}
+
+.editor__toolbar__button:hover {
+    background-color: var(--secondary);
+}
+
 .editor__textarea {
     height: 100%;
     outline: none;
@@ -820,11 +843,38 @@ input[type="search"] {
     border: none;
     color: var(--foreground);
     background-color: var(--surface);
+    overflow-y: auto;
 }
 
 .editor__textarea:focus {
     outline: none;
     border: none;
+}
+
+.editor__textarea b,
+.editor__textarea strong {
+    font-weight: bold;
+}
+
+.editor__textarea i,
+.editor__textarea em {
+    font-style: italic;
+}
+
+.editor__textarea u {
+    text-decoration: underline;
+}
+
+.editor__textarea s,
+.editor__textarea strike {
+    text-decoration: line-through;
+}
+
+.editor__textarea:empty:before {
+    content: attr(data-placeholder);
+    color: var(--foreground);
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 .settingsview {
