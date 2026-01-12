@@ -114,11 +114,26 @@ export function createEditorTemplate(
           </div>
       </div>
       <div class="separator-full"></div>
-      <textarea
-          name="content"
+      <div class="editor__toolbar">
+          <button type="button" class="editor__toolbar__button" data-command="bold" title="Bold">
+            <b>B</b>
+          </button>
+          <button type="button" class="editor__toolbar__button" data-command="italic" title="Italic">
+            <i>I</i>
+          </button>
+          <button type="button" class="editor__toolbar__button" data-command="underline" title="Underline">
+            <u>U</u>
+          </button>
+          <button type="button" class="editor__toolbar__button" data-command="strikeThrough" title="Strikethrough">
+            <s>S</s>
+          </button>
+      </div>
+      <div
+          id="editor-content"
+          contenteditable="true"
           class="editor__textarea text-preset-5"
-          placeholder="Start typing your note here..."
-      >${escapeHtml(content ?? "")}</textarea>
+          data-placeholder="Start typing your note here..."
+      >${content ?? ""}</div>
     <div class="bottombar">
         <button type="submit" id="save-note-button" class="btn btn__default" ${title ? "" : "disabled"}>Save Note</button>
         <button type="reset" id="cancel-button" class="btn btn__secondary">Cancel</button>
