@@ -75,6 +75,7 @@ function flushCurrentEditorDraft() {
   const titleInput = editor.querySelector("#editor-title");
   const tagsInput = editor.querySelector('input[name="tags"]');
   const contentInput = editor.querySelector('textarea[name="content"]');
+  const isPublicInput = editor.querySelector('input[name="is_public"]');
   const id = get(activeNoteId) || "new";
   const payload = {
     title: titleInput ? String(titleInput.value) : "",
@@ -89,6 +90,7 @@ function flushCurrentEditorDraft() {
     is_archived:
       (get(notes) || []).find((n) => String(n.id) === String(id))
         ?.is_archived || false,
+    is_public: isPublicInput ? isPublicInput.checked : false,
   };
   saveDraft(id, payload);
 }
@@ -239,6 +241,7 @@ effect(() => {
       active.tags,
       active.last_edited,
       active.is_archived,
+      active.is_public,
     );
   }
 
@@ -456,6 +459,7 @@ effect(() => {
   const titleInput = editor.querySelector("#editor-title");
   const tagsInput = editor.querySelector('input[name="tags"]');
   const contentInput = editor.querySelector('textarea[name="content"]');
+  const isPublicInput = editor.querySelector('input[name="is_public"]');
   const saveBtn = editor.querySelector("#save-note-button");
 
   const updateSaveState = () => {
@@ -482,6 +486,9 @@ effect(() => {
     if (tagsInput && typeof existingDraft.tags !== "undefined") {
       tagsInput.value = (existingDraft.tags || []).join(", ");
     }
+    if (isPublicInput && typeof existingDraft.is_public !== "undefined") {
+      isPublicInput.checked = existingDraft.is_public;
+    }
     updateSaveState();
   }
 
@@ -504,6 +511,7 @@ effect(() => {
         is_archived:
           (get(notes) || []).find((n) => String(n.id) === String(id))
             ?.is_archived || false,
+        is_public: isPublicInput ? isPublicInput.checked : false,
       };
       saveDraft(id, payload);
     }, 500);
@@ -536,6 +544,7 @@ effect(() => {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
+    payload.is_public = !!payload.is_public;
 
     const id = get(activeNoteId);
     if (id && id !== "new") payload.id = id;

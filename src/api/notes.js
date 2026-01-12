@@ -10,6 +10,7 @@ import { supabase } from "./supabase.js";
  * - content: required string
  * - tags: required array of strings
  * - is_archived: optional boolean
+ * - is_public: optional boolean
  *
  * @param {Object} note - The note payload to validate.
  * @param {string} note.user_id - ID of the user who owns the note.
@@ -17,6 +18,7 @@ import { supabase } from "./supabase.js";
  * @param {string} note.content - Content/body of the note.
  * @param {string[]} note.tags - Array of tag strings associated with the note.
  * @param {boolean} [note.is_archived] - Optional flag indicating whether the note is archived.
+ * @param {boolean} [note.is_public] - Optional flag indicating whether the note is public.
  * @returns {boolean} True if the payload is valid, otherwise false.
  */
 function validateNoteInsert(note) {
@@ -26,6 +28,8 @@ function validateNoteInsert(note) {
   if (!Array.isArray(note.tags)) return false;
   if (note.tags.some((t) => typeof t !== "string")) return false;
   if (note.is_archived !== undefined && typeof note.is_archived !== "boolean")
+    return false;
+  if (note.is_public !== undefined && typeof note.is_public !== "boolean")
     return false;
 
   return true;
@@ -43,6 +47,7 @@ function validateNoteInsert(note) {
  * @param {string} note.content - Content/body of the note.
  * @param {string[]} note.tags - Array of tag strings associated with the note.
  * @param {boolean} [note.is_archived] - Optional flag indicating whether the note is archived.
+ * @param {boolean} [note.is_public] - Optional flag indicating whether the note is public.
  * @returns {Promise<Object>} The inserted note record as returned by Supabase.
  * @throws {TypeError} If the provided note payload fails validation.
  * @throws {Error} If Supabase returns an error during insertion.
