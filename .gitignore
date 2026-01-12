@@ -17,6 +17,7 @@ npm-debug.log*
 /dist
 /.next
 /out
+/.vite
 
 *.log
 *.pem
