@@ -1,6 +1,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/.vite
 yarn.debug.log*
 yarn.error.log*
 npm-debug.log*

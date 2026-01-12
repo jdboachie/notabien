@@ -73,6 +73,32 @@ export function saveAllNotes(partialNotes) {
   }
 }
 
+/**
+ * Replace the entire local notes store with the provided array.
+ *
+ * This will overwrite all local notes with the provided `notes` array,
+ * sorted by `last_edited` descending. Use this when remote data arrives
+ * and you want to reconcile local storage with the remote source.
+ *
+ * @param {Object[]} notes - Array of note objects to persist locally.
+ * @returns {boolean} true if saved successfully; false otherwise.
+ */
+export function replaceAllNotes(notes) {
+  try {
+    const arr = Array.isArray(notes) ? notes.slice() : [];
+    arr.sort((a, b) => {
+      const ta = a && a.last_edited ? new Date(a.last_edited).getTime() : 0;
+      const tb = b && b.last_edited ? new Date(b.last_edited).getTime() : 0;
+      return tb - ta;
+    });
+    safeSetItem(NOTES_KEY, JSON.stringify(arr));
+    return true;
+  } catch (err) {
+    console.error("replaceAllNotes failed", err);
+    return false;
+  }
+}
+
 export function loadDraft(id) {
   try {
     const raw = localStorage.getItem(DRAFTS_KEY);
