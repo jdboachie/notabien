@@ -1,3 +1,6 @@
+author: Jude Boachie
+last edited: 14/01/2026
+
 # Categories Implementation Plan
 
 ## 1. Data Layer (`src/storage.js`)
