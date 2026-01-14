@@ -74,11 +74,11 @@ function flushCurrentEditorDraft() {
   if (!editor) return;
   const titleInput = editor.querySelector("#editor-title");
   const tagsInput = editor.querySelector('input[name="tags"]');
-  const contentInput = editor.querySelector('textarea[name="content"]');
+  const contentInput = editor.querySelector("#editor-content");
   const id = get(activeNoteId) || "new";
   const payload = {
     title: titleInput ? String(titleInput.value) : "",
-    content: contentInput ? String(contentInput.value) : "",
+    content: contentInput ? String(contentInput.innerHTML) : "",
     tags: tagsInput
       ? String(tagsInput.value)
           .split(",")
@@ -455,8 +455,20 @@ effect(() => {
 
   const titleInput = editor.querySelector("#editor-title");
   const tagsInput = editor.querySelector('input[name="tags"]');
-  const contentInput = editor.querySelector('textarea[name="content"]');
+  const contentInput = editor.querySelector("#editor-content");
   const saveBtn = editor.querySelector("#save-note-button");
+
+  const toolbarButtons = editor.querySelectorAll(".editor__toolbar__button");
+  toolbarButtons.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const command = btn.dataset.command;
+      if (command) {
+        document.execCommand(command, false, null);
+        contentInput.focus();
+      }
+    });
+  });
 
   const updateSaveState = () => {
     if (!saveBtn) return;
@@ -477,7 +489,7 @@ effect(() => {
       titleInput.value = existingDraft.title;
     }
     if (contentInput && typeof existingDraft.content !== "undefined") {
-      contentInput.value = existingDraft.content;
+      contentInput.innerHTML = existingDraft.content;
     }
     if (tagsInput && typeof existingDraft.tags !== "undefined") {
       tagsInput.value = (existingDraft.tags || []).join(", ");
@@ -498,7 +510,7 @@ effect(() => {
         : [];
       const payload = {
         title: titleInput ? String(titleInput.value) : "",
-        content: contentInput ? String(contentInput.value) : "",
+        content: contentInput ? String(contentInput.innerHTML) : "",
         tags,
         last_edited: new Date().toISOString(),
         is_archived:
@@ -532,6 +544,7 @@ effect(() => {
 
     const fd = new FormData(e.target);
     let payload = Object.fromEntries(fd.entries());
+    payload.content = contentInput ? contentInput.innerHTML : "";
     payload.tags = payload.tags
       .split(",")
       .map((t) => t.trim())
