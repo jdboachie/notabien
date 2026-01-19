@@ -24,6 +24,8 @@ import {
   loadDraft,
   saveDraft,
   deleteDraft,
+  loadAllNotes,
+  replaceAllNotes,
 } from "./storage.js";
 
 ensureAuth();
@@ -75,6 +77,7 @@ function flushCurrentEditorDraft() {
   const titleInput = editor.querySelector("#editor-title");
   const tagsInput = editor.querySelector('input[name="tags"]');
   const contentInput = editor.querySelector("#editor-content");
+  const isPublicInput = editor.querySelector('input[name="is_public"]');
   const id = get(activeNoteId) || "new";
   const payload = {
     title: titleInput ? String(titleInput.value) : "",
@@ -89,6 +92,7 @@ function flushCurrentEditorDraft() {
     is_archived:
       (get(notes) || []).find((n) => String(n.id) === String(id))
         ?.is_archived || false,
+    is_public: isPublicInput ? isPublicInput.checked : false,
   };
   saveDraft(id, payload);
 }
@@ -146,6 +150,34 @@ document
     }
     set(activeNoteId, "new");
     set(searchQuery, null);
+  });
+
+document
+  .getElementById("export-notes-button")
+  .addEventListener("click", async (event) => {
+    event.preventDefault();
+    try {
+      const data = await loadAllNotes();
+      if (!Array.isArray(data) || data.length === 0) {
+        toast("error", "No notes to export");
+        return;
+      }
+      const payload = JSON.stringify(data, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const ts = new Date().toISOString().replace(/[:.]/g, "-");
+      a.href = url;
+      a.download = `notabien-notes-${ts}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("success", `Exported ${data.length} notes`);
+    } catch (err) {
+      console.error("Export failed", err);
+      toast("error", "Failed to export notes");
+    }
   });
 
 effect(async () => {
@@ -239,6 +271,7 @@ effect(() => {
       active.tags,
       active.last_edited,
       active.is_archived,
+      active.is_public,
     );
   }
 
@@ -409,6 +442,7 @@ effect(async () => {
 
   try {
     const all = (await fetchAllNotes()) || [];
+    replaceAllNotes(all);
     const counts = {};
     all.forEach((note) => {
       (note.tags || []).forEach((t) => {
@@ -455,7 +489,10 @@ effect(() => {
 
   const titleInput = editor.querySelector("#editor-title");
   const tagsInput = editor.querySelector('input[name="tags"]');
+  
   const contentInput = editor.querySelector("#editor-content");
+  const isPublicInput = editor.querySelector('input[name="is_public"]');
+
   const saveBtn = editor.querySelector("#save-note-button");
 
   const toolbarButtons = editor.querySelectorAll(".editor__toolbar__button");
@@ -494,6 +531,9 @@ effect(() => {
     if (tagsInput && typeof existingDraft.tags !== "undefined") {
       tagsInput.value = (existingDraft.tags || []).join(", ");
     }
+    if (isPublicInput && typeof existingDraft.is_public !== "undefined") {
+      isPublicInput.checked = existingDraft.is_public;
+    }
     updateSaveState();
   }
 
@@ -516,6 +556,7 @@ effect(() => {
         is_archived:
           (get(notes) || []).find((n) => String(n.id) === String(id))
             ?.is_archived || false,
+        is_public: isPublicInput ? isPublicInput.checked : false,
       };
       saveDraft(id, payload);
     }, 500);
@@ -549,6 +590,7 @@ effect(() => {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
+    payload.is_public = !!payload.is_public;
 
     const id = get(activeNoteId);
     if (id && id !== "new") payload.id = id;
